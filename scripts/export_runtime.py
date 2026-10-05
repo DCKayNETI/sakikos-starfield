@@ -14,8 +14,10 @@ canonical content/（post-sync 状态）
 - world.weather 取锚点切片「气象」行（ADDENDUM 定义的格式字段），缺失 → null。
 - world.title 取切片标头【】内完整标签文本。
 
-grounded include-list（合同 §2.4，Starfield 私有）：01 世界书 / 02 编年史 / 03 共享日记
-/ 04 成员档案。05 创作者随想、06 全景沙盘（含地图/沙盘 UI 及路线图日志）、index/导览
+grounded include-list（合同 §2.4，Starfield 私有）：01 世界书（仅 ADDENDUM_02 白名单
+小节：世界观核心基准 / 地理空间 / 关键历史事件 / 成员档案总览；速查、§2 载体协议
+MOSTLY_NON_GROUNDED、§6 维护公约等运维元规则一律排除）/ 02 编年史 / 03 共享日记 /
+04 成员档案。05 创作者随想、06 全景沙盘（含地图/沙盘 UI 及路线图日志）、index/导览
 一律不导出——地图界面后续迭代与 runtime 内容完全解耦。
 
 独立可执行（deploy.yml 仅是 caller 之一）：
@@ -52,8 +54,12 @@ PERSONA_HEAD = re.compile(r"^#{1,2}.*当前形态状态机.*$", re.M)
 SCENE_LINE = re.compile(r"^[\s*#]*核心场景\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
 WEATHER_LINE = re.compile(r"^[\s*#]*气象\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
 SUMMARY_LINE = re.compile(r"^[\s*#]*概要\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
-# World Info 中的运维性元规则小节（ADDENDUM：NON_GROUNDED），按标题排除
-NON_GROUNDED_WORLD_INFO = ("置顶全局核心准则速查",)
+# World Info 小节白名单（ADDENDUM_02 仲裁：world_info 仅 grounded 世界事实小节可导出。
+# 速查 / §2 核心公共载体与资产协议（MOSTLY_NON_GROUNDED，其日记世界内概念已由 03 日记
+# 记录覆盖）/ §6 维护公约等运维元规则一律排除）。按标题匹配属 Starfield 私有
+# include-list（合同 §2.4）；内容侧重命名小节时需同步此常量。白名单 = fail closed：
+# 新增未裁决小节默认不导出。
+GROUNDED_WORLD_INFO_SECTIONS = ("世界观核心基准", "地理空间", "关键历史事件", "现役成员档案")
 GATE_OPEN_ATTR = re.compile(r'<div class="time-gate"[^>]*data-unlock="([^"]+)"[^>]*>')
 GATE_OPEN_ANY = re.compile(r'<div class="time-gate"[^>]*>\n?')
 GATE_BADGE_DIV = re.compile(r'<div class="time-gate-badge">.*?</div>\n?')
@@ -213,8 +219,8 @@ def collect_records(content_dir, chars, order, by_id, alias, now):
                     g = gate_unlock(block)
                     if g == "INVALID" or (g is not None and g > now):
                         continue  # 门控失效或仍未解锁 → 整条剔除
-                if rtype == "world_info" and any(k in title for k in NON_GROUNDED_WORLD_INFO):
-                    continue  # ADDENDUM：运维性元规则 NON_GROUNDED
+                if rtype == "world_info" and not any(k in title for k in GROUNDED_WORLD_INFO_SECTIONS):
+                    continue  # ADDENDUM_02：白名单外小节一律 NON_GROUNDED（fail closed）
                 text = clean_text(block)
                 if not re.sub(r"[-|:\s\\]", "", text):
                     continue  # 仅含分隔线/表格骨架等排版残渣的小节不导出

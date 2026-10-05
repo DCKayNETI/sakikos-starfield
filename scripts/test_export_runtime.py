@@ -87,6 +87,17 @@ WORLD_INFO = """# 乐团世界书
 
 ## **【置顶全局核心准则速查 / Quick Reference Core Directives】**
 1. **共享日记公约**：每人每天最多读写一次共享日记（运维元规则）。
+
+## **2\\. 核心公共载体与资产协议 (Shared Artifacts & Assets)**
+- **使用规范**：每人每天最多翻阅并写入一次（维护配额）。
+- **记忆持久化机制**：跨会话持久化绑定说明（运维元规则）。
+- 世界内概念：乐团共享日记本由成员传阅书写。
+
+## **3\\. 地理空间与生活据点拓扑 (Key Locations)**
+地理拓扑正文。
+
+## **6\\. 世界书更新与维护公约 (Maintenance Protocol)**
+维护公约正文（运维元规则）。
 """ + "\n"
 
 DIARY = """# 乐团共享日记本
@@ -225,10 +236,17 @@ class CollectTest(unittest.TestCase):
                          {"world_info", "chronicle_slice", "diary_entry", "memory_entry"})
 
     def test_world_info_meta_rules_filtered(self):
+        # ADDENDUM_02 白名单：仅 1/3/4/5 号 grounded 小节放行
         wi = " ".join(r["title"] + r["text"] for r in self.recs("world_info"))
         self.assertIn("世界基准正文", wi)
-        self.assertNotIn("置顶全局核心准则速查", wi)
-        self.assertNotIn("每人每天最多读写一次", wi)
+        self.assertIn("地理拓扑正文", wi)
+        for banned in ("置顶全局核心准则速查", "核心公共载体与资产协议",
+                       "记忆持久化机制", "世界书更新与维护公约"):
+            self.assertNotIn(banned, wi)
+        # 运维配额规则不得以任何形式进入 runtime（含其他小节/记录引用）
+        self.assertFalse(any("每人每天" in r["text"] for r in self.records))
+        # 世界内概念由 03 日记记录本体承载，§2 整体排除后 diary_entry 仍在
+        self.assertTrue(self.recs("diary_entry"))
 
     def test_snapshot_local_id_uniqueness(self):
         ids = [r["id"] for r in self.records]
