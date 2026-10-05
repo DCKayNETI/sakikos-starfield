@@ -48,16 +48,27 @@ jobs:
               data = json.load(f)
           MARK = "🔒 星轨观测锁定"
           TEASER = "🔒 后续世界线已封存，随东京时间逐日解锁。"
+          # contentIndex.tsx 的正文字段名是 content；此处曾误写 "text" 导致截断从未生效
+          FIELD = "content"
+          def trim(txt):
+              i = txt.find(MARK)
+              if i == -1:
+                  return txt, False
+              return txt[:i] + TEASER, True
+          # 回归自检：字段名或截断逻辑再退化成 no-op 时，构建必须在这里失败
+          probe = "visible prefix " + MARK + " badge · 将于 01-01 00:00 JST 抵达成像点 SECRET-FUTURE-BODY-9f2a"
+          cleaned, hit = trim(probe)
+          assert hit and "SECRET-FUTURE-BODY-9f2a" not in cleaned, "sanitize self-test failed"
           changed = 0
           for slug, entry in data.items():
-              txt = entry.get("text", "")
-              i = txt.find(MARK)
-              if i != -1:
-                  entry["text"] = txt[:i] + TEASER
-                  changed += 1
+              if isinstance(entry.get(FIELD), str):
+                  entry[FIELD], hit = trim(entry[FIELD])
+                  changed += hit
           with open(p, "w", encoding="utf-8") as f:
               json.dump(data, f, ensure_ascii=False, separators=(",", ":"))
-          print(f"time-gate: trimmed {changed} page(s) in search index")
+          for slug, entry in data.items():
+              assert MARK not in (entry.get(FIELD) or ""), f"time-gate leak survived in {slug}"
+          print(f"time-gate: trimmed {changed} page(s); post-check clean")
           PYEOF
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
