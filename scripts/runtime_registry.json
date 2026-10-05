@@ -1,0 +1,16 @@
+{
+  "_comment": "Starfield 私有 name→machine_id 注册表（合同 §7：跨项目主键，不公开映射实现）。display_name 即短名，同时登记为别名；04 档案 frontmatter aliases 在导出时动态并入。顺序即 current_state.characters 输出顺序。",
+  "characters": [
+    { "id": "toyokawa_sakiko", "display_name": "丰川祥子", "archive": "丰川祥子_长期记忆档案.md" },
+    { "id": "misumi_uika", "display_name": "三角初华", "archive": "三角初华_长期记忆档案.md" },
+    { "id": "yahata_umiri", "display_name": "八幡海铃", "archive": "八幡海铃_长期记忆档案.md" },
+    { "id": "yutenji_nyamu", "display_name": "祐天寺若麦", "archive": "祐天寺若麦_长期记忆档案.md" },
+    { "id": "wakaba_mutsumi", "display_name": "若叶睦", "archive": "若叶睦_长期记忆档案.md" },
+    { "id": "takamatsu_tomori", "display_name": "高松灯", "archive": "高松灯_长期记忆档案.md" },
+    { "id": "chihaya_anon", "display_name": "千早爱音", "archive": "千早爱音_长期记忆档案.md" },
+    { "id": "kaname_rana", "display_name": "要乐奈", "archive": "要乐奈_长期记忆档案.md" },
+    { "id": "nagasaki_soyo", "display_name": "长崎素世", "archive": "长崎素世_长期记忆档案.md" },
+    { "id": "shiina_taki", "display_name": "椎名立希", "archive": "椎名立希_长期记忆档案.md" },
+    { "id": "sumida_mana", "display_name": "纯田真奈", "archive": "纯田真奈_长期记忆档案.md" }
+  ]
+}

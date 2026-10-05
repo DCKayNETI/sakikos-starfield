@@ -70,6 +70,9 @@ jobs:
               assert MARK not in (entry.get(FIELD) or ""), f"time-gate leak survived in {slug}"
           print(f"time-gate: trimmed {changed} page(s); post-check clean")
           PYEOF
+      - name: Export runtime snapshot (STARFIELD_FLESH_CONTRACT_V1)
+        run: |
+          python3 scripts/export_runtime.py --content-dir content --out-dir public/static/runtime
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
