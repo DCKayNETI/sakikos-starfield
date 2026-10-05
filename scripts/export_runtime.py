@@ -16,7 +16,8 @@ canonical content/（post-sync 状态）
 
 grounded include-list（合同 §2.4，Starfield 私有）：01 世界书（仅 ADDENDUM_02 白名单
 小节：世界观核心基准 / 地理空间 / 关键历史事件 / 成员档案总览；速查、§2 载体协议
-MOSTLY_NON_GROUNDED、§6 维护公约等运维元规则一律排除）/ 02 编年史 / 03 共享日记 /
+MOSTLY_NON_GROUNDED、§6 维护公约等运维元规则一律排除；另含内容权威逐字接入的
+「乐团共享日记本」世界内设定文本，随语义冻结生效）/ 02 编年史 / 03 共享日记 /
 04 成员档案。05 创作者随想、06 全景沙盘（含地图/沙盘 UI 及路线图日志）、index/导览
 一律不导出——地图界面后续迭代与 runtime 内容完全解耦。
 
@@ -55,11 +56,26 @@ SCENE_LINE = re.compile(r"^[\s*#]*核心场景\*{0,2}\s*[:：]\s*(.+?)\s*$", re.
 WEATHER_LINE = re.compile(r"^[\s*#]*气象\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
 SUMMARY_LINE = re.compile(r"^[\s*#]*概要\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
 # World Info 小节白名单（ADDENDUM_02 仲裁：world_info 仅 grounded 世界事实小节可导出。
-# 速查 / §2 核心公共载体与资产协议（MOSTLY_NON_GROUNDED，其日记世界内概念已由 03 日记
-# 记录覆盖）/ §6 维护公约等运维元规则一律排除）。按标题匹配属 Starfield 私有
-# include-list（合同 §2.4）；内容侧重命名小节时需同步此常量。白名单 = fail closed：
-# 新增未裁决小节默认不导出。
+# 速查 / §2 核心公共载体与资产协议（MOSTLY_NON_GROUNDED，其日记世界内概念由下方
+# 逐字文本与 03 日记记录承载）/ §6 维护公约等运维元规则一律排除）。按标题匹配属
+# Starfield 私有 include-list（合同 §2.4）；内容侧重命名小节时需同步此常量。
+# 白名单 = fail closed：新增未裁决小节默认不导出。
 GROUNDED_WORLD_INFO_SECTIONS = ("世界观核心基准", "地理空间", "关键历史事件", "现役成员档案")
+
+# 内容权威（丰川祥子）在 RUNTIME_CONTENT_QUESTIONS.md 裁决中提供的逐字世界内文本，
+# 随 STARFIELD_RUNTIME_CONTENT_SEMANTICS_V1 冻结一并授权接入。源码侧仅原样导出，
+# 严禁改写；后续版本如需修改须由内容权威提供新文本。
+CONTENT_AUTHORITY_VERBATIM = [
+    {
+        "title": "乐团共享日记本 (The Shared Diary)",
+        "text": (
+            "在少女们之间流转着一本封面素朴的硬皮记事簿。无论是在 Livehouse RiNG 的地下"
+            "排练室、放学后的电车站台、练习室的吧台角落，还是目黑与白金台的居所，大家会"
+            "依照各自的生活节奏随手翻阅并写下零星琐碎的日常随笔、排练感触、或是向同伴的"
+            "简短留言。这是跨越学园与乐队界限、记录少女们真实生活微澜与心声流淌的私密记事本。"
+        ),
+    },
+]
 GATE_OPEN_ATTR = re.compile(r'<div class="time-gate"[^>]*data-unlock="([^"]+)"[^>]*>')
 GATE_OPEN_ANY = re.compile(r'<div class="time-gate"[^>]*>\n?')
 GATE_BADGE_DIV = re.compile(r'<div class="time-gate-badge">.*?</div>\n?')
@@ -257,6 +273,16 @@ def collect_records(content_dir, chars, order, by_id, alias, now):
                                   clean_text(sm.group(1)) if sm else None,
                                   clean_text(wm.group(1)) if wm else None,
                                   summary))
+    for v in CONTENT_AUTHORITY_VERBATIM:
+        seq += 1
+        records.append({
+            "id": hashlib.sha256(
+                f"world_info\x00verbatim/{v['title']}".encode("utf-8")).hexdigest()[:16],
+            "type": "world_info",
+            "subject_ids": [],
+            "title": v["title"],
+            "text": v["text"].strip(),  # 逐字接入，仅去首尾空白
+        })
     return records, chron
 
 

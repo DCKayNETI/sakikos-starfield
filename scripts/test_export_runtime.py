@@ -248,6 +248,21 @@ class CollectTest(unittest.TestCase):
         # 世界内概念由 03 日记记录本体承载，§2 整体排除后 diary_entry 仍在
         self.assertTrue(self.recs("diary_entry"))
 
+    def test_content_authority_verbatim_record(self):
+        # 语义冻结：内容权威逐字文本必须原样导出，无改写、无截断
+        vr = [r for r in self.recs("world_info") if r["title"] == "乐团共享日记本 (The Shared Diary)"]
+        self.assertEqual(len(vr), 1)
+        self.assertTrue(vr[0]["text"].startswith("在少女们之间流转着一本封面素朴的硬皮记事簿"))
+        self.assertTrue(vr[0]["text"].endswith("心声流淌的私密记事本。"))
+        self.assertEqual(vr[0]["subject_ids"], [])
+        # ID 由固定键派生，跨 snapshot 确定性
+        import hashlib as _h
+        self.assertEqual(vr[0]["id"], _h.sha256(
+            "world_info\x00verbatim/乐团共享日记本 (The Shared Diary)".encode("utf-8")
+        ).hexdigest()[:16])
+        # fixture 白名单命中小节（§1、§3）2 个 + 逐字文本 1 条 = world_info 记录数
+        self.assertEqual(len(self.recs("world_info")), 3)
+
     def test_snapshot_local_id_uniqueness(self):
         ids = [r["id"] for r in self.records]
         self.assertEqual(len(ids), len(set(ids)))
