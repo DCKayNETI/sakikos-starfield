@@ -7,9 +7,12 @@ canonical content/（post-sync 状态）
 
 语义依据（内容侧 STARFIELD_RUNTIME_CONTENT_SEMANTICS_V1）：
 - 锚点切片 = MAX(slice.timestamp) WHERE timestamp <= 当前 JST；未来切片一律不导出。
-- persona_state 仅取自成员档案「当前形态状态机」：白祥→white / 黑祥→black，其余 fallback white。
-- world.summary 禁止生成（本脚本不含任何 LLM/改写；recent_events 摘要为正文机械截断）。
-- world.weather 在 canonical 中无结构化来源，省略不臆造（待内容侧定义）。
+- persona_state 仅取自成员档案「当前形态状态机」：白祥→white / 黑祥→black；
+  小节缺失或取值不可辨 → None（省略），绝不合成默认人格。
+- world.summary 禁止生成；recent_events 摘要优先取切片「概要」行，缺失时回退
+  「标题 @ 场景」，禁止硬截断。
+- world.weather 取锚点切片「气象」行（ADDENDUM 定义的格式字段），缺失 → null。
+- world.title 取切片标头【】内完整标签文本。
 
 grounded include-list（合同 §2.4，Starfield 私有）：01 世界书 / 02 编年史 / 03 共享日记
 / 04 成员档案。05 创作者随想、06 全景沙盘（含地图/沙盘 UI 及路线图日志）、index/导览
@@ -44,7 +47,13 @@ PARTITIONS = [
 # 小节级切分：# 与 ## 为边界（### 以下并入上级小节）。
 SECTION_HEAD = re.compile(r"^#{1,2} .+$", re.M)
 PERSONA_HEAD = re.compile(r"^#{1,2}.*当前形态状态机.*$", re.M)
-SCENE_LINE = re.compile(r"核心场景\*{0,2}\s*[:：]\s*(.+)")
+# 切片内结构化行（ADDENDUM 定义的格式字段）。兼容 "* **标签**: …" 的项目符号/粗体
+# 星号前缀；行锚定避免误配正文，捕获段尾部留待 clean_text 处理
+SCENE_LINE = re.compile(r"^[\s*#]*核心场景\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+WEATHER_LINE = re.compile(r"^[\s*#]*气象\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+SUMMARY_LINE = re.compile(r"^[\s*#]*概要\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+# World Info 中的运维性元规则小节（ADDENDUM：NON_GROUNDED），按标题排除
+NON_GROUNDED_WORLD_INFO = ("置顶全局核心准则速查",)
 GATE_OPEN_ATTR = re.compile(r'<div class="time-gate"[^>]*data-unlock="([^"]+)"[^>]*>')
 GATE_OPEN_ANY = re.compile(r'<div class="time-gate"[^>]*>\n?')
 GATE_BADGE_DIV = re.compile(r'<div class="time-gate-badge">.*?</div>\n?')
@@ -96,12 +105,6 @@ def clean_title(title):
     return re.sub(r"^[#*\s]+|[*\s]+$", "", title).strip()
 
 
-def excerpt(text, n=120):
-    """recent_events 摘要：机械截断（仅剥排版标记），非改写、非 LLM 摘要。"""
-    t = re.sub(r"[*`#>]", "", re.sub(r"\s+", " ", text)).strip()
-    return t[:n] + ("…" if len(t) > n else "")
-
-
 def split_blocks(body, mode):
     """切分为 (标题, 正文块) 列表。sections：# / ## 边界；slices：【…】切片边界，
     首个边界之前的 preamble（卷首宪章/使用协议等编辑性文本）不导出。"""
@@ -119,14 +122,23 @@ def split_blocks(body, mode):
 
 
 def gate_unlock(body):
-    """门控包装的 unlock 时刻；无包装返回 None；有包装但时间不可解析返回 "INVALID"（fail closed）。"""
+    """门控状态判定，fail closed：
+    - 无 gate → None（视为无门控）
+    - 有 gate 但缺 data-unlock / 时间不可解析 / 无时区 → "INVALID"（整条剔除）
+    - 合法 offset-aware datetime → 返回该时刻（按当前 JST 重判）
+    """
+    if not GATE_OPEN_ANY.search(body):
+        return None
     m = GATE_OPEN_ATTR.search(body)
     if not m:
-        return None
+        return "INVALID"
     try:
-        return datetime.fromisoformat(m.group(1))
+        dt = datetime.fromisoformat(m.group(1))
     except ValueError:
         return "INVALID"
+    if dt.tzinfo is None:
+        return "INVALID"
+    return dt
 
 
 def build_registry(content_dir):
@@ -159,8 +171,8 @@ def subjects_from_links(raw, alias, order):
 
 
 def parse_persona(body):
-    """当前形态状态机 → white/black。canonical 小节缺失返回 None（该字段省略）；
-    小节存在但取值不可辨时按内容侧声明的 fallback 取 white。不做任何推断。"""
+    """当前形态状态机 → white/black（ADDENDUM：active 仅祥子，v1 值域 white/black）。
+    canonical 小节缺失或取值不可辨 → None（字段输出 null），绝不合成默认人格。"""
     m = PERSONA_HEAD.search(body)
     if not m:
         return None
@@ -173,7 +185,7 @@ def parse_persona(body):
             return "black"
         if "白祥" in val:
             return "white"
-    return "white"
+    return None
 
 
 def collect_records(content_dir, chars, order, by_id, alias, now):
@@ -196,11 +208,13 @@ def collect_records(content_dir, chars, order, by_id, alias, now):
                 seq += 1
                 dt = _slice_unlock(title) if mode == "slices" else None
                 if mode == "slices":
+                    if dt is None or dt > now:
+                        continue  # 切片时间不可解析或属于未来 → fail closed，不入 grounded runtime
                     g = gate_unlock(block)
                     if g == "INVALID" or (g is not None and g > now):
                         continue  # 门控失效或仍未解锁 → 整条剔除
-                    if dt and dt > now:
-                        continue  # 语义规格：T > Current_JST 一律不导出
+                if rtype == "world_info" and any(k in title for k in NON_GROUNDED_WORLD_INFO):
+                    continue  # ADDENDUM：运维性元规则 NON_GROUNDED
                 text = clean_text(block)
                 if not re.sub(r"[-|:\s\\]", "", text):
                     continue  # 仅含分隔线/表格骨架等排版残渣的小节不导出
@@ -226,7 +240,17 @@ def collect_records(content_dir, chars, order, by_id, alias, now):
                 records.append(rec)
                 if rtype == "chronicle_slice":
                     sm = SCENE_LINE.search(block)
-                    chron.append((dt or now, seq, rec, clean_text(sm.group(1)) if sm else None))
+                    wm = WEATHER_LINE.search(block)
+                    gm = SUMMARY_LINE.search(block)
+                    if gm:
+                        summary = clean_text(gm.group(1))  # ADDENDUM：概要行优先，禁止截断
+                    else:
+                        scene_text = clean_text(sm.group(1)) if sm else None
+                        summary = rec["title"] + (" @ " + scene_text if scene_text else "")
+                    chron.append((dt, seq, rec,
+                                  clean_text(sm.group(1)) if sm else None,
+                                  clean_text(wm.group(1)) if wm else None,
+                                  summary))
     return records, chron
 
 
@@ -245,22 +269,24 @@ def build_current_state(chars, order, by_id, content_dir, records, chron, now, r
             with open(p, encoding="utf-8") as f:
                 _, _, body = read_frontmatter(f.read())
             persona = parse_persona(body)
-        if persona:
-            entry["persona_state"] = persona
+        entry["persona_state"] = persona  # ADDENDUM：active 仅祥子，其余 null；不可辨 → null
         state["characters"].append(entry)
     if chron:
         chron.sort(key=lambda x: (x[0], x[1]))
-        anchor_dt, _, anchor, anchor_scene = chron[-1]
-        anchor_title = anchor["title"].split("|", 1)[1].strip() if "|" in anchor["title"] else anchor["title"]
-        world = {"time": anchor_dt.isoformat(), "title": anchor_title}
+        anchor_dt, _, anchor, anchor_scene, anchor_weather, _ = chron[-1]
+        world = {
+            "time": anchor_dt.isoformat(),
+            "title": anchor["title"],  # ADDENDUM：切片标头【】内完整标签文本
+            "weather": anchor_weather,  # ADDENDUM：气象行缺失 → null
+        }
         if anchor_scene:
             world["scene"] = anchor_scene
         state["world"] = world
         state["recent_events"] = [
-            {"time": dt.isoformat(), "title": rec["title"], "summary": excerpt(rec["text"])}
-            for dt, _, rec, _ in chron[-recent_n:][::-1]
+            {"time": dt.isoformat(), "title": rec["title"], "summary": summary}
+            for dt, _, rec, _, _, summary in chron[-recent_n:][::-1]
         ]
-    # world.weather / world.summary：canonical 无来源 / 内容侧禁止生成，均不输出。
+    # world.summary：内容侧禁止生成，永不输出。
     return state
 
 
@@ -294,6 +320,8 @@ def world_revision(content_dir):
 def validate(records, state, order, now):
     """发布前自校验（合同 §2.5：完整校验后才发布）。任何失败直接终止，不产出半成品。"""
     assert records, "knowledge 为空：解析器与内容结构可能已脱节"
+    ids = [r["id"] for r in records]
+    assert len(ids) == len(set(ids)), "knowledge ID 在 snapshot 内重复"
     valid = set(order)
     for r in records:
         assert not any(f in r["title"] or f in r["text"] for f in FORBIDDEN), \
@@ -304,6 +332,30 @@ def validate(records, state, order, now):
                 f"未来切片逃过 authority gate：{r['title'][:40]}"
     blob = json.dumps(state, ensure_ascii=False)
     assert not any(f in blob for f in FORBIDDEN), "current_state 含门控残留"
+
+
+def build_manifest(records, state, now, revision):
+    """组装三 payload（合同 §2.2：manifest 携带 payload sha256 + bytes）。"""
+    knowledge = "".join(
+        json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n" for r in records
+    ).encode("utf-8")
+    state_bytes = (json.dumps(state, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    manifest = {
+        "schema_version": RUNTIME_SCHEMA,
+        "generated_at": now.replace(microsecond=0).isoformat(),
+        "world_revision": revision,
+        "files": {
+            "knowledge.jsonl": {"sha256": hashlib.sha256(knowledge).hexdigest(),
+                                "bytes": len(knowledge)},
+            "current_state.json": {"sha256": hashlib.sha256(state_bytes).hexdigest(),
+                                   "bytes": len(state_bytes)},
+        },
+        "records": len(records),
+    }
+    manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+    return {"knowledge.jsonl": knowledge,
+            "current_state.json": state_bytes,
+            "manifest.json": manifest_bytes}
 
 
 def publish(out_dir, payloads):
@@ -337,28 +389,8 @@ def main():
                                 now, revision, args.recent_events)
     validate(records, state, order, now)
 
-    knowledge = "".join(
-        json.dumps(r, ensure_ascii=False, separators=(",", ":")) + "\n" for r in records
-    ).encode("utf-8")
-    state_bytes = (json.dumps(state, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    manifest = {
-        "schema_version": RUNTIME_SCHEMA,
-        "generated_at": now.replace(microsecond=0).isoformat(),
-        "world_revision": revision,
-        "files": {
-            "knowledge.jsonl": {"sha256": hashlib.sha256(knowledge).hexdigest(),
-                                "bytes": len(knowledge)},
-            "current_state.json": {"sha256": hashlib.sha256(state_bytes).hexdigest(),
-                                   "bytes": len(state_bytes)},
-        },
-        "records": len(records),
-    }
-    manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
-    publish(args.out_dir, {
-        "knowledge.jsonl": knowledge,
-        "current_state.json": state_bytes,
-        "manifest.json": manifest_bytes,
-    })
+    payloads = build_manifest(records, state, now, revision)
+    publish(args.out_dir, payloads)
 
     by_type = {}
     for r in records:
