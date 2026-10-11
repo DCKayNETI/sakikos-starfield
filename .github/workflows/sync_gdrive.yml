@@ -20,6 +20,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       changed: ${{ steps.commit.outputs.changed }}
+      new_sha: ${{ steps.commit.outputs.new_sha }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,6 +44,7 @@ jobs:
             git commit -m "sync: auto-sync updated documents from Google Drive"
             git push
             echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "new_sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
           else
             echo "changed=false" >> "$GITHUB_OUTPUT"
           fi
@@ -51,6 +53,8 @@ jobs:
     needs: sync
     if: needs.sync.outputs.changed == 'true'
     uses: ./.github/workflows/deploy.yml
+    with:
+      ref: ${{ needs.sync.outputs.new_sha }}
     permissions:
       contents: read
       pages: write
