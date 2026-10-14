@@ -3214,22 +3214,44 @@
     // 24-HOUR SPATIAL ROUTINE & HOLIDAY ENGINE (全员24小时时空漫游与现实假期引擎)
     // ==========================================
     // Japanese Holidays & Vacation Helper
+    // 时区基准：Asia/Tokyo（不依赖浏览器本地时区）
     function isJapaneseHoliday(date) {
-      const m = date.getMonth() + 1;
-      const d = date.getDate();
+      const parts = new Intl.DateTimeFormat('en-US', {
+        timeZone: 'Asia/Tokyo',
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        weekday: 'short'
+      }).formatToParts(new Date(date));
+      const getPart = (type) => {
+        const hit = parts.find(p => p.type === type);
+        return hit ? hit.value : '';
+      };
+      const m = parseInt(getPart('month'), 10);
+      const d = parseInt(getPart('day'), 10);
+      const wd = getPart('weekday'); // 'Mon' | 'Tue' | ...
+
+      // 固定日期节假日（按 Asia/Tokyo 的年月日判定）
       const holidays = [
         [1, 1], [1, 2], [1, 3], // 元日与正月
         [2, 11], [2, 23],       // 建国纪念 / 天皇诞生日
         [3, 20], [3, 21],       // 春分
         [4, 29], [5, 3], [5, 4], [5, 5], // 黄金周
-        [7, 15], [7, 16], [7, 17], // 海之日
         [8, 11], [8, 12], [8, 13], [8, 14], [8, 15], // 山之日与盂兰盆节
-        [9, 15], [9, 16], [9, 21], [9, 22], [9, 23], // 敬老日 / 秋分
-        [10, 12], [10, 13], [10, 14], // 体育之日
+        [9, 21], [9, 22], [9, 23], // 秋分
         [11, 3], [11, 23],      // 文化之日 / 勤劳感谢之日
         [12, 28], [12, 29], [12, 30], [12, 31] // 年末休假
       ];
-      return holidays.some(h => h[0] === m && h[1] === d);
+      if (holidays.some(h => h[0] === m && h[1] === d)) return true;
+
+      // ハッピーマンデー（第 N 个周一）：严格限定 weekday === 'Mon' 当天触发
+      if (wd === 'Mon') {
+        if (m === 1 && d >= 8 && d <= 14) return true;   // 成人之日：1月第2个周一
+        if (m === 7 && d >= 15 && d <= 21) return true;  // 海之日：7月第3个周一
+        if (m === 9 && d >= 15 && d <= 21) return true;  // 敬老日：9月第3个周一
+        if (m === 10 && d >= 8 && d <= 14) return true;  // 体育之日：10月第2个周一
+      }
+      return false;
     }
 
     // Schedule Profiles for each character across different scenarios
