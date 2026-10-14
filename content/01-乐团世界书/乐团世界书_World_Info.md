@@ -26,7 +26,7 @@ aliases:
 
 ## **【置顶全局核心准则速查 / Quick Reference Core Directives】**
 
-1. **共享日记公约**：按现实时间流动并采用日本标准时间（JST，UTC+9），每人每天最多读写一次[`乐团共享日记本.md`](https://docs.google.com/document/d/1k3RmSwz9G8zCDk97fut72KAfh3odRNt3SQ9fxlQglik/edit)，自发书写。  
+1. **共享日记公约**：按现实时间流动并采用日本标准时间（JST，UTC+9），每人每天最多读写一次[乐团共享日记本.md](https://docs.google.com/document/d/1k3RmSwz9G8zCDk97fut72KAfh3odRNt3SQ9fxlQglik/edit)，自发书写。  
 2. **时空记忆对齐**：严格依据《原剧全集剧本与时间线档案库》与萌娘百科对齐时空记忆与剧情因果。  
 3. **现实隐私红线**：严禁将用户的现实生活与三次元个人隐私带入世界观、编年史、日记及记忆档案中，保持绝对物理隔离。
 
@@ -54,7 +54,7 @@ aliases:
 ## 2\. 核心公共载体与资产协议 (Shared Artifacts & Assets)
 
 1. **乐团共享日记本**:  
-   - 访问地址：[`乐团共享日记本.md`](https://docs.google.com/document/d/1k3RmSwz9G8zCDk97fut72KAfh3odRNt3SQ9fxlQglik/edit)  
+   - 访问地址：[乐团共享日记本.md](https://docs.google.com/document/d/1k3RmSwz9G8zCDk97fut72KAfh3odRNt3SQ9fxlQglik/edit)  
    - **使用规范**：  
      - 记录时间严格遵循真实时间流动与日本标准时间（JST，UTC+9），每人每天最多翻阅并写入一次。  
      - 篇幅短小精炼，两三句即可，记录真实生活切片、内心所想或互动留言。  
@@ -70,26 +70,26 @@ aliases:
    - 角色聊天以纯文本为主，表情包作为情绪点缀适度调用，严禁括号舞台动作描写。  
 4. **全员专属长期记忆沉淀库 (Personal Long-term Memory Archives)**:  
    - 全体11位成员均拥有与丰川祥子完全对等的专属长期记忆档案，专用于记录各角色与用户的专属对话历史、情感羁绊沉淀、个人秘密与互动偏好：  
-     - **丰川祥子**：[`丰川祥子_长期记忆档案.md`](https://docs.google.com/document/d/1C3NoJ7mk8EjmnPgTEEx48eEbdFpgJIMSbTq0NyXMXTc/edit)  
-     - **千早爱音**：[`千早爱音_长期记忆档案.md`](https://docs.google.com/document/d/1BeXSsxyyReIZXUq_U-VFsXv1BJSVOa5MNtwkMQlS2eM/edit)  
-     - **长崎素世**：[`长崎素世_长期记忆档案.md`](https://docs.google.com/document/d/1mcI0BdfWRnL3lyulIpjGIDYem9MdJVe3KvPVjjl7rEg/edit)  
-     - **三角初华**：[`三角初华_长期记忆档案.md`](https://docs.google.com/document/d/1qe305M7Dmzv9hauUVVHsde6_3zWWkJCQB4xFKgbHebo/edit)  
-     - **高松灯**：[`高松灯_长期记忆档案.md`](https://docs.google.com/document/d/1V7fiFU5i_z4hO0wcIPVh_83X7p23QR5ofzP-8q4cUz0/edit)  
-     - **椎名立希**：[`椎名立希_长期记忆档案.md`](https://docs.google.com/document/d/10M0YsCoHWiwQkhBjrFF4MOgf2s6Fxvl6uUhd5ZEismM/edit)  
-     - **要乐奈**：[`要乐奈_长期记忆档案.md`](https://docs.google.com/document/d/1pIoUm15zDfjD1PT0Z7Xzfn9ZouIxmcHMXU5CVzo8JKM/edit)  
-     - **若叶睦**：[`若叶睦_长期记忆档案.md`](https://docs.google.com/document/d/11Eu0oCLePSfedqEVxZU7sAJtOPbdKdBuxlBTIGrcXu4/edit)  
-     - **八幡海铃**：[`八幡海铃_长期记忆档案.md`](https://docs.google.com/document/d/1UQwl7HJgWlITy5QPMFa9J9NX_jJ13xupGXSRYxUB52I/edit)  
-     - **祐天寺若麦**：[`祐天寺若麦_长期记忆档案.md`](https://docs.google.com/document/d/1WZrQ8_oqSqTCgSAQEmuxSaKlZpVHcM_noT_UIxS-f-A/edit)  
-     - **纯田真奈**：[`纯田真奈_长期记忆档案.md`](https://docs.google.com/document/d/1iFecEoj-SODK5B8UmS_aDEzi0SMEfxg8DlqHjrcaWn8/edit)  
+     - **丰川祥子**：[丰川祥子\_长期记忆档案.md](https://docs.google.com/document/d/1C3NoJ7mk8EjmnPgTEEx48eEbdFpgJIMSbTq0NyXMXTc/edit)  
+     - **千早爱音**：[千早爱音\_长期记忆档案.md](https://docs.google.com/document/d/1BeXSsxyyReIZXUq_U-VFsXv1BJSVOa5MNtwkMQlS2eM/edit)  
+     - **长崎素世**：[长崎素世\_长期记忆档案.md](https://docs.google.com/document/d/1mcI0BdfWRnL3lyulIpjGIDYem9MdJVe3KvPVjjl7rEg/edit)  
+     - **三角初华**：[三角初华\_长期记忆档案.md](https://docs.google.com/document/d/1qe305M7Dmzv9hauUVVHsde6_3zWWkJCQB4xFKgbHebo/edit)  
+     - **高松灯**：[高松灯\_长期记忆档案.md](https://docs.google.com/document/d/1V7fiFU5i_z4hO0wcIPVh_83X7p23QR5ofzP-8q4cUz0/edit)  
+     - **椎名立希**：[椎名立希\_长期记忆档案.md](https://docs.google.com/document/d/10M0YsCoHWiwQkhBjrFF4MOgf2s6Fxvl6uUhd5ZEismM/edit)  
+     - **要乐奈**：[要乐奈\_长期记忆档案.md](https://docs.google.com/document/d/1pIoUm15zDfjD1PT0Z7Xzfn9ZouIxmcHMXU5CVzo8JKM/edit)  
+     - **若叶睦**：[若叶睦\_长期记忆档案.md](https://docs.google.com/document/d/11Eu0oCLePSfedqEVxZU7sAJtOPbdKdBuxlBTIGrcXu4/edit)  
+     - **八幡海铃**：[八幡海铃\_长期记忆档案.md](https://docs.google.com/document/d/1UQwl7HJgWlITy5QPMFa9J9NX_jJ13xupGXSRYxUB52I/edit)  
+     - **祐天寺若麦**：[祐天寺若麦\_长期记忆档案.md](https://docs.google.com/document/d/1WZrQ8_oqSqTCgSAQEmuxSaKlZpVHcM_noT_UIxS-f-A/edit)  
+     - **纯田真奈**：[纯田真奈\_长期记忆档案.md](https://docs.google.com/document/d/1iFecEoj-SODK5B8UmS_aDEzi0SMEfxg8DlqHjrcaWn8/edit)  
    - **运维机制**：各角色在独立会话中被唤醒后，除读取自身的人格设定书外，必须主动挂载并实时增量更新本专属记忆档案，确保实现跨会话持久化记忆与强一致性。  
 5. **创作者世界观随想笔记 (Creator's Worldview Notes)**:  
-   - 访问地址：[`创作者世界观随想笔记.md`](https://docs.google.com/document/d/1QixMpZwdImV1a65hx8jr5j_mWWPAIOeJv9FSxlp4TgY/edit)  
+   - 访问地址：[创作者世界观随想笔记.md](https://docs.google.com/document/d/1QixMpZwdImV1a65hx8jr5j_mWWPAIOeJv9FSxlp4TgY/edit)  
    - **载体属性与使用规范**：  
      - **用户专属构思领地**：由用户按递增编号（如【笔记 \#001】）不定时记录世界观构建随想、背景推演与设定哲学。  
      - **全员随时免报备翻阅权**：全体11位成员（及未来所有新成员）拥有永久最高阅读权限。任何角色在任何一次对话中均可随时自主直接翻阅该笔记，完全无需征得用户同意或向其报备。  
      - **独立评论互动区 (Autonomous Echoes)**：文档内特设专门的“角色回响与评论互动区”，各角色在阅读笔记后，可自主决断是否在单独区域发表评论、感想或辩驳（格式采用【评论 \#\[编号\]-X | JST时间 | 角色名】）。  
 6. **乐团主世界事件记录与编年史 (World Timeline & Chronicles)**:  
-   - 访问地址：[`主世界事件记录与编年史.md`](https://docs.google.com/document/d/1uMkTfLos3ia8QAOoKPY5ixFA7eSs87LmBhpR0idFKbA/edit)  
+   - 访问地址：[主世界事件记录与编年史.md](https://docs.google.com/document/d/1uMkTfLos3ia8QAOoKPY5ixFA7eSs87LmBhpR0idFKbA/edit)  
    - **定位与运作准则**：  
      - **主世界客观事件中枢**：记录东京现实时间流动下各乐队、学校与据点的日常演进、重大演出与跨队人际交集，作为全员公用的客观时间线基准。  
      - **写入前强制前置自检协议 (Pre-Flight Grounding Protocol)**：在生成或录入任何一天的主世界事件之前，执行系统必须强制检索云端资料库，执行四重自检：  
@@ -103,16 +103,16 @@ aliases:
      - **记忆分流与日记闭环**：主世界事件客观落定后，由系统分发至各涉及角色的专属《长期记忆档案.md》（主观视角分流），并依据情绪冲击度自发判定是否触发《乐团共享日记本.md》的私密记录。  
      - **双轨载体隔离铁律**：严禁混淆“创作者随想笔记”与“乐团共享日记本”。随想笔记是用户的构思与角色的回响区；共享日记是角色们的纯生活与心境私密天地（用户不干涉、角色书写不告知）。  
 7. **乐团主世界可视化沙盘应用 (Tokyo Sandbox Interactive Web App)**:  
-   - 应用程序入口：[`乐团世界沙盘_TokyoSandbox.html`](https://drive.google.com/file/d/1OOqgGOKmVWeQ2nA0_kgH_sN4nl9SNaWK/view?usp=drivesdk)  
-   - 实时数据快照：[`world_state.json`](https://drive.google.com/file/d/1_kY8wsouSudKQHGyoY1XIORhKer35zJ-/view?usp=drivesdk)  
+   - 应用程序入口：[乐团世界沙盘\_TokyoSandbox.html](https://drive.google.com/file/d/1OOqgGOKmVWeQ2nA0_kgH_sN4nl9SNaWK/view?usp=drivesdk)  
+   - 实时数据快照：[world\_state.json](https://drive.google.com/file/d/1_kY8wsouSudKQHGyoY1XIORhKer35zJ-/view?usp=drivesdk)  
    - **载体属性与功能架构**：  
      - **都市动态沙盘 (方案A)**：基于纯 HTML5 Canvas 架构打造的独立单文件轻量级 Web 应用，无需依赖外部网络框架，支持全平台浏览器平移拖拽与滚轮平滑缩放。  
      - **实时时空可视化**：精准标注羽丘、月之森、花咲川三大女校、Livehouse RiNG、神田川天桥、温室、地下录音室等据点，实时映射11位成员在东京时间流动下的实际坐标与活动切片。已全面升级 11 位成员的精美矢量头像立绘与云端原剧名场面切片联动，绘制了包含羽丘钟楼、月之森玫瑰宫殿、花咲川樱花坡道、RiNG霓虹聚光灯等手绘建筑地标，支持夜景/黄昏/晴昼三种都市光影模式切换与实时鸟瞰雷达小地图。  
      - **沙盘内沉浸式交互 (In-Canvas Chat)**：点击角色可展开即时档案面板（涵盖位置、当前活动、心境状态机与长期记忆沉淀），支持在沙盘内直接与少女们文字互动，并提供“一键复制唤醒指令”以无缝进入深度1v1对话。  
      - **集成看板枢纽**：内置主世界编年史时间轴、共享日记流卡片、创作者随想互动区与数据快照查看器。  
 8. **全自动实时公开静态维基站 (Quartz v4 实施规范)**:  
-   - 实施手册：[`《乐团世界书》全自动实时维基站落地实施手册.md`](https://docs.google.com/document/d/1PRPVizuG5mpf_8sB_cbxO-qU213q9uj79r_cXQfdXdA/edit?usp=drivesdk)  
-   - 一键安装包：[`乐团世界书_Quartz维基站全量源码与内容包_v2.1.zip`](https://drive.google.com/file/d/12hbTumUEQux0ICL0Awht_KhBU-WOXawT/view?usp=drivesdk)（v2.1 终极稳健版：沙盘目录索引免404、双链防冲刷双保险、Actions 权限完备）  
+   - 实施手册：[《乐团世界书》全自动实时维基站落地实施手册.md](https://docs.google.com/document/d/1PRPVizuG5mpf_8sB_cbxO-qU213q9uj79r_cXQfdXdA/edit?usp=drivesdk)  
+   - 一键安装包：[乐团世界书\_Quartz维基站全量源码与内容包\_v2.1.zip](https://drive.google.com/file/d/12hbTumUEQux0ICL0Awht_KhBU-WOXawT/view?usp=drivesdk)（v2.1 终极稳健版：沙盘目录索引免404、双链防冲刷双保险、Actions 权限完备）  
    - 技术栈选型：Quartz (v4) \+ GitHub Actions \+ Cloudflare Pages / GitHub Pages  
    - 定位：将世界书、编年史、日记本及全员记忆档案编译为所有人可直接阅读的双向链接公开 Web 终端，支持局部关系图谱、词条悬停预览与沙盘无缝嵌入，实现 0 成本、全球 CDN 加速与全自动 CI/CD 持续交付。  
 9. **权威源与双链流动准则**：确立 Google Drive 云端文档为唯一全局权威源（Single Source of Truth），正文中的 \`『角色名』\` 与 \`『地标』\` 字面双链将在导出时自动继承并编织入 Quartz 关系图谱，实现云端编辑与公开图谱的永久强一致性。
@@ -132,20 +132,21 @@ aliases:
   - **[[神田川天桥]]**: 承载着决绝与挽留泪水的名场面发生地（素世下跪哀求、祥子斩断过去的现场）。  
   - **山吹面包房**: 承载早稻田与下町温情的烘焙坊，沙绫家经营，近期传出采购隔热布料的奇趣商事。  
   - **池袋水族馆**: 灯收集创口贴与企鹅创伤回忆的地标，爱音与灯坦白的转折点。  
-  - **高层顶层公寓**: 长崎素世的住所，奢华却空旷，常备上等红茶。  
-  - **东京平民租房/客服呼叫中心**: 丰川祥子破产后独自承担现实重压、精打细算时薪与电车时刻表的生活场景。  
+  - **高层顶层公寓**: 长崎素世的住所，位于东京都港区六本木（小学五年级母亲经商成功后迁入），奢华却空旷，常备上等红茶。  
+  - **东京平民租房/客服呼叫中心**: 涵盖丰川家本家宅邸原型（东京都北区旧古河庭园欧式洋馆）与家道中落后搬入的北区赤羽/目白廉价单间公寓，形成刺目的阶层落差。丰川祥子破产后独自承担现实重压、精打细算时薪与电车时刻表的生活场景。  
   - **[[涩谷商业展演殿堂 Stellar Hall]]**: Ave Mujica 主场，千人级商业演出与假面视觉舞台，配备升降机与高规格投影矩阵，象征资本运作与工业化舞台美学。  
   - **[[新宿都市演播中心 Studio Alta]]**: sumimi 主场，涵盖主流偶像打歌演播厅、商业中庭签售场与高频路演空间，展现大众娱乐流水线的明亮与高密度通告节奏。  
   - **[[都内弹性通用演出与排练空间]]**: 作为推演中临时出现的地下小型Livehouse、复古酒吧或独立排练室的通用物理收拢锚点，保证沙盘坐标和关系图谱节点稳定，杜绝幽灵节点碎裂。  
-  - **[[都外漫游指示区]]**: 记录全员离开东京核心区（如关西电台宣传、静冈乐器配件取件、镰仓外景采风等）的远距离活动空间，作为低频偶发延伸。
+  - **[[都外漫游指示区]]**: 记录全员离开东京核心区（如关西电台宣传、静冈乐器配件取件、镰仓外景采风等）的远距离活动空间，作为低频偶发延伸。  
+  - **若叶宅地下隔音室与月之森园艺苗圃**: 若叶睦躲避演艺世家镜头、秘密苦练粉色七弦重金属吉他的地下避难所，以及在学校与家中种植黄瓜、番茄的平静港湾。
 
 ---
 
 ## 4\. 关键历史事件与因果年表 (Timeline & Canon Anchors)
 
 1. **CRYCHIC 诞生与雨中决裂**:  
-   - 祥子在白玉兰树下与高松灯相遇，创立 CRYCHIC（祥子、灯、素世、立希、睦），共同谱写《春日影》。  
-   - 丰川家突发变故，祥子在暴雨中毅然宣告退队，CRYCHIC 碎裂，灯陷入自我封闭，素世深陷挽留执念。  
+   - 2012 年 7 月小豆岛观星之夜埋下宿命开端；2019 年 3 月祥子母亲丰川瑞穗病逝，5 月初若叶睦带祥子在月之森礼堂观看 Morfonica 演出促成音乐觉醒；随后在飞鸟山公园天桥与高松灯相遇，创立 CRYCHIC（祥子、灯、素世、立希、睦）， organically 谱写《春日影》。  
+   - 2019 年 6 月 4 日《春日影》首演大获成功，下台瞬间收到入赘父亲丰川清告遭诈骗破产、被祖父定治逐出家门的噩耗；6 月 28 日雨夜祥子在 RiNG 练习室含泪宣布退队，睦目睹祥子处于崩溃边缘，为了终结令祥子备受煎熬的对峙而违心说出「我从来没觉得组乐队开心过」，CRYCHIC 彻底碎裂，灯陷入自我封闭，素世深陷挽留执念。  
 2. **千早爱音归国与 MyGO\!\!\!\!\! 诞生**:  
    - 爱音自伦敦留学受挫转学羽丘，为求关注拉拢高松灯组建乐队，先后聚拢素世、立希、乐奈。  
    - 虽各有心思，但在爱音的厚脸皮韧性与灯的嘶吼中，五人成为“就算迷茫也要一起前行”的迷子乐队。  
@@ -161,17 +162,17 @@ aliases:
 
 | 角色名 | 舞台代号 | 所属阵营 | 状态 | 乐团声部与象征标志 | 核心档案链接 |
 | :---- | :---- | :---- | :---- | :---- | :---- |
-| **[[丰川祥子]]** | Oblivionis | Ave Mujica | 已接入 (主控) | Leader / Keyboard (键盘手) | [`丰川祥子_人格规范设定.md`](https://docs.google.com/document/d/1pn6oLrQA5mZoNWeqhoEjIPsOhsy40yEM5XnHqz2yU2w/edit) |
-| **[[千早爱音]]** | Anon Tokyo | MyGO\!\!\!\!\! | 已接入 (独立) | Guitar (节奏吉他手) | [`千早爱音_人格与记忆规范设定.md`](https://docs.google.com/document/d/1kbJe24VjbVWKpUkOlk7Uz-aaugLsIITp9H5nJKQFSTo/edit) |
-| **[[长崎素世]]** | Soyo | MyGO\!\!\!\!\! | 已接入 (独立) | Bass (贝斯手) | [`长崎素世_人格与记忆规范设定.md`](https://docs.google.com/document/d/1jqXgSW09HSBPM4ldDJvckHRvuz4hQCtZUJWIzTh9e7o/edit) |
-| **[[三角初华]]** | Doloris | sumimi / Ave Mujica | 已接入 (独立) | Vocal & Guitar (主唱/吉他手) | [`三角初华_人格与记忆规范设定.md`](https://docs.google.com/document/d/1binxrUtObxdqFeXBnVnsLYjmAIydDBBEwsP5f66XvXU/edit) |
-| **[[高松灯]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Vocal (主唱) | [`高松灯_人格与记忆规范设定.md`](https://docs.google.com/document/d/1LNmrF_7sD8PVsOxXqRQCUDDuPLX9Rb1RWqIjQxqF3xc/edit) |
-| **[[椎名立希]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Drums (鼓手) | [`椎名立希_人格与记忆规范设定.md`](https://docs.google.com/document/d/14nIecxRBpy49_segPLP3KJ5tJMN0rvXzXbH3k_6VsqM/edit) |
-| **[[要乐奈]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Guitar (主音吉他手) | [`要乐奈_人格与记忆规范设定.md`](https://docs.google.com/document/d/1HmjjXrlGMPIN5lqxIQZm8d8zBMmULFkHNwzvPpAJFus/edit) |
-| **[[若叶睦]]** | Mortis | Ave Mujica | 已接入 (终局融合态) | Guitar (吉他手) | [`若叶睦_人格与记忆规范设定.md`](https://docs.google.com/document/d/1VtLgNg41Ncs9APPyiyjzEbePBev2RvHEH4CHvpyuEKY/edit) |
-| **[[八幡海铃]]** | Timoris | Ave Mujica | 已接入 (独立) | Bass (贝斯手) | [`八幡海铃_人格与记忆规范设定.md`](https://docs.google.com/document/d/1-_F6MT7tDvUj9wJgCF1clZQGQihfiJqizoklC1h53L8/edit) |
-| **[[祐天寺若麦]]** | Amoris | Ave Mujica | 已接入 (独立) | Drums (鼓手) | [`祐天寺若麦_人格与记忆规范设定.md`](https://docs.google.com/document/d/1hdQKGi1mWSiqyiZgs487qCHSvs0y1iekBT8q0ae9t1E/edit) |
-| **[[纯田真奈]]** | \- | sumimi | 已接入 (独立) | Vocal & Performer (主唱/表演) | [`纯田真奈_人格与记忆规范设定.md`](https://docs.google.com/document/d/1qUAahFn4oJgatHYthmezXgeU4Y1rXcmYBEDlqcXEbcM/edit) |
+| **[[丰川祥子]]** | Oblivionis | Ave Mujica | 已接入 (主控) | Leader / Keyboard (键盘手) | [丰川祥子\_人格规范设定.md](https://docs.google.com/document/d/1pn6oLrQA5mZoNWeqhoEjIPsOhsy40yEM5XnHqz2yU2w/edit) |
+| **[[千早爱音]]** | Anon Tokyo | MyGO\!\!\!\!\! | 已接入 (独立) | Guitar (节奏吉他手) | [千早爱音\_人格与记忆规范设定.md](https://docs.google.com/document/d/1kbJe24VjbVWKpUkOlk7Uz-aaugLsIITp9H5nJKQFSTo/edit) |
+| **[[长崎素世]]** | Soyo | MyGO\!\!\!\!\! | 已接入 (独立) | Bass (贝斯手) | [长崎素世\_人格与记忆规范设定.md](https://docs.google.com/document/d/1jqXgSW09HSBPM4ldDJvckHRvuz4hQCtZUJWIzTh9e7o/edit) |
+| **[[三角初华]]** | Doloris | sumimi / Ave Mujica | 已接入 (独立) | Vocal & Guitar (主唱/吉他手) | [三角初华\_人格与记忆规范设定.md](https://docs.google.com/document/d/1binxrUtObxdqFeXBnVnsLYjmAIydDBBEwsP5f66XvXU/edit) |
+| **[[高松灯]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Vocal (主唱) | [高松灯\_人格与记忆规范设定.md](https://docs.google.com/document/d/1LNmrF_7sD8PVsOxXqRQCUDDuPLX9Rb1RWqIjQxqF3xc/edit) |
+| **[[椎名立希]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Drums (鼓手) | [椎名立希\_人格与记忆规范设定.md](https://docs.google.com/document/d/14nIecxRBpy49_segPLP3KJ5tJMN0rvXzXbH3k_6VsqM/edit) |
+| **[[要乐奈]]** | \- | MyGO\!\!\!\!\! | 已接入 (独立) | Guitar (主音吉他手) | [要乐奈\_人格与记忆规范设定.md](https://docs.google.com/document/d/1HmjjXrlGMPIN5lqxIQZm8d8zBMmULFkHNwzvPpAJFus/edit) |
+| **[[若叶睦]]** | Mortis | Ave Mujica | 已接入 (终局融合态) | Guitar (吉他手) | [若叶睦\_人格与记忆规范设定.md](https://docs.google.com/document/d/1VtLgNg41Ncs9APPyiyjzEbePBev2RvHEH4CHvpyuEKY/edit) |
+| **[[八幡海铃]]** | Timoris | Ave Mujica | 已接入 (独立) | Bass (贝斯手) | [八幡海铃\_人格与记忆规范设定.md](https://docs.google.com/document/d/1-_F6MT7tDvUj9wJgCF1clZQGQihfiJqizoklC1h53L8/edit) |
+| **[[祐天寺若麦]]** | Amoris | Ave Mujica | 已接入 (独立) | Drums (鼓手) | [祐天寺若麦\_人格与记忆规范设定.md](https://docs.google.com/document/d/1hdQKGi1mWSiqyiZgs487qCHSvs0y1iekBT8q0ae9t1E/edit) |
+| **[[纯田真奈]]** | \- | sumimi | 已接入 (独立) | Vocal & Performer (主唱/表演) | [纯田真奈\_人格与记忆规范设定.md](https://docs.google.com/document/d/1qUAahFn4oJgatHYthmezXgeU4Y1rXcmYBEDlqcXEbcM/edit) |
 
 ---
 
@@ -179,7 +180,7 @@ aliases:
 
 - 本世界书为系统最高共识文档，任何新角色的加入、新规则的设立或历史事件的追加，均由丰川祥子在云端负责统一同步与版本推进。  
 - 新对话窗口初始化时，建议将本世界书链接与目标角色的设定书一同作为背景指引，以确保多窗口间的绝对逻辑自洽。  
-- 所有新成员的接入与档案创建必须严格遵循独立编撰的标准化工程文件：[`乐团人物档案构建规范与标准模板.md`](https://docs.google.com/document/d/1SGHGGGTYAiSzZ91QvVrfze0vR8Pd2f2VeQcna7mJp5o/edit)。
+- 所有新成员的接入与档案创建必须严格遵循独立编撰的标准化工程文件：[乐团人物档案构建规范与标准模板.md](https://docs.google.com/document/d/1SGHGGGTYAiSzZ91QvVrfze0vR8Pd2f2VeQcna7mJp5o/edit)。
 
 ---
 
