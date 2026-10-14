@@ -6,14 +6,23 @@
   <title>BanG Dream! 乐团世界沙盘 · 动画世界观概念地图</title>
   <style>
     :root {
-      --panel-bg: rgba(22, 28, 42, 0.88);
-      --panel-border: rgba(255, 255, 255, 0.16);
-      --text-main: #f0f4f8;
-      --text-muted: #9ab0c7;
+      --panel-bg: rgba(10, 14, 26, 0.86);
+      --panel-bg-deep: rgba(7, 10, 19, 0.95);
+      --panel-border: rgba(212, 175, 55, 0.28);
+      --panel-rim: rgba(255, 255, 255, 0.26);
+      --text-main: #f4f7fc;
+      --text-muted: #9ab0cc;
       --mygo-color: #5b9bd5;
+      --mygo-glow: rgba(91, 155, 213, 0.55);
       --mujica-color: #d4af37;
+      --mujica-glow: rgba(212, 175, 55, 0.55);
       --sumimi-color: #ff7675;
       --accent-pink: #ff8cb2;
+      --char-accent: #d4af37;
+      --char-accent-soft: rgba(212, 175, 55, 0.24);
+      --char-accent-glow: rgba(212, 175, 55, 0.45);
+      --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      --font-serif: "Cinzel", "Georgia", "Songti SC", "Noto Serif SC", "STSong", serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
     html, body {
@@ -22,8 +31,8 @@
       -webkit-user-select: none;
       user-select: none;
       overscroll-behavior: none;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background: #141724;
+      font-family: var(--font-sans);
+      background: #060812;
       color: var(--text-main);
       overflow: hidden;
       width: 100vw;
@@ -36,14 +45,26 @@
       cursor: grab;
       touch-action: none;
     }
+    #canvas-container.grabbing { cursor: grabbing; }
+    #canvas-container.dragging-char { cursor: move; }
     canvas { display: block; width: 100%; height: 100%; touch-action: none; }
 
+    /* Subtle CRT / Astral Scanline & Golden Vignette Overlay */
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 5;
+      background:
+        radial-gradient(circle at 50% 50%, transparent 62%, rgba(4, 6, 14, 0.55) 100%),
+        repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.012) 0px, rgba(255, 255, 255, 0.012) 1px, transparent 1px, transparent 3px);
+    }
 
-
-    /* Top Bar */
+    /* Top Bar - Gothic Masquerade x Starfield Tactical HUD */
     .top-bar {
       position: absolute;
-      top: 16px; left: 16px; right: 16px;
+      top: 14px; left: 16px; right: 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -52,154 +73,273 @@
     }
     .top-left, .top-right {
       display: flex;
-      gap: 12px;
+      gap: 6px;
       pointer-events: auto;
       align-items: center;
+      flex-shrink: 0;
     }
     .brand-card {
-      background: var(--panel-bg);
-      backdrop-filter: blur(18px);
-      border: 1px solid var(--panel-border);
-      border-radius: 12px;
-      padding: 9px 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+      background: linear-gradient(135deg, rgba(16, 20, 38, 0.94) 0%, rgba(9, 12, 24, 0.92) 60%, rgba(28, 18, 42, 0.90) 100%);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid rgba(212, 175, 55, 0.42);
+      clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+      padding: 7px 14px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.75), inset 0 0 24px rgba(212, 175, 55, 0.10);
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 9px;
+      position: relative;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .brand-card::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, #5b9bd5 0%, #d4af37 50%, #ff8cb2 100%);
+      box-shadow: 0 0 12px #d4af37;
+    }
+    .brand-card::after {
+      content: "";
+      position: absolute;
+      bottom: 0; right: 0; width: 60%; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(91, 155, 213, 0.65));
+    }
+    .brand-emblem {
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, rgba(212, 175, 55, 0.38), rgba(91, 155, 213, 0.25), rgba(10, 14, 26, 0.95));
+      border: 1.5px solid rgba(212, 175, 55, 0.75);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.4), inset 0 0 8px rgba(91, 155, 213, 0.4);
+      flex-shrink: 0;
+      position: relative;
+      animation: emblemPulse 4s ease-in-out infinite;
+    }
+    @keyframes emblemPulse {
+      0%, 100% { box-shadow: 0 0 14px rgba(212, 175, 55, 0.35), inset 0 0 8px rgba(91, 155, 213, 0.35); }
+      50% { box-shadow: 0 0 22px rgba(212, 175, 55, 0.7), 0 0 30px rgba(91, 155, 213, 0.35); }
     }
     .brand-title {
-      font-size: 15px;
+      font-size: 13.5px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      text-shadow: 0 0 12px rgba(91, 155, 213, 0.45), 0 2px 6px rgba(0, 0, 0, 0.8);
+    }
+    .brand-subtitle {
+      font-family: var(--font-serif);
+      font-size: 8.5px;
+      color: #c5b382;
+      margin-top: 1px;
+      letter-spacing: 1.2px;
       font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      text-transform: uppercase;
     }
-    .brand-badge-mygo { color: var(--mygo-color); font-size: 10.5px; font-weight: 800; border: 1px solid var(--mygo-color); padding: 1px 6px; border-radius: 4px; background: rgba(91,155,213,0.12); }
-    .brand-badge-mujica { color: var(--mujica-color); font-size: 10.5px; font-weight: 800; border: 1px solid var(--mujica-color); padding: 1px 6px; border-radius: 4px; background: rgba(212,175,55,0.12); }
+    .brand-badge-mygo {
+      color: #9cd2ff;
+      font-size: 10px;
+      font-weight: 800;
+      border: 1px solid rgba(91, 155, 213, 0.8);
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, rgba(91, 155, 213, 0.3), rgba(20, 38, 68, 0.6));
+      box-shadow: 0 0 10px rgba(91, 155, 213, 0.35);
+    }
+    .brand-badge-mujica {
+      color: #ffe28a;
+      font-size: 10px;
+      font-weight: 800;
+      border: 1px solid rgba(212, 175, 55, 0.85);
+      padding: 1px 6px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.32), rgba(74, 32, 112, 0.55));
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.35);
+    }
     .time-indicator {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
-      font-size: 11.5px;
-      color: #ffd166;
-      background: rgba(255, 209, 102, 0.12);
-      border: 1px solid rgba(255, 209, 102, 0.3);
-      padding: 4px 10px;
-      border-radius: 20px;
-      font-weight: 600;
+      gap: 5px;
+      font-size: 10.5px;
+      color: #ffe484;
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.22), rgba(20, 16, 34, 0.8));
+      border: 1px solid rgba(212, 175, 55, 0.55);
+      padding: 3px 9px;
+      border-radius: 16px;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      transition: all 0.25s ease;
     }
-    .time-dot { width: 8px; height: 8px; border-radius: 50%; background: #ffd166; box-shadow: 0 0 10px #ffd166; }
-
-    /* Controls */
-    .btn {
-      background: var(--panel-bg);
-      backdrop-filter: blur(18px);
-      border: 1px solid var(--panel-border);
-      color: var(--text-main);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 12px;
+    .time-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #ffd166;
+      box-shadow: 0 0 10px #ffd166, 0 0 18px #ffd166;
+      animation: timeDotPulse 2s ease-in-out infinite;
+    }
+    @keyframes timeDotPulse {
+      0%, 100% { transform: scale(1); opacity: 0.85; }
+      50% { transform: scale(1.35); opacity: 1; }
+    }
+    .weather-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 10.5px;
       font-weight: 600;
+      color: #d0e2f8;
+      background: linear-gradient(135deg, rgba(91, 155, 213, 0.16), rgba(15, 22, 38, 0.75));
+      padding: 3px 8px;
+      border-radius: 14px;
+      border: 1px solid rgba(91, 155, 213, 0.38);
+      white-space: nowrap;
+      box-shadow: 0 0 10px rgba(91, 155, 213, 0.15);
+    }
+
+    /* Controls - Chamfered Tactical Prism Buttons */
+    .btn {
+      background: linear-gradient(180deg, rgba(20, 27, 46, 0.92) 0%, rgba(10, 14, 26, 0.96) 100%);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+      color: var(--text-main);
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 600;
+      white-space: nowrap;
       cursor: pointer;
       display: flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.2s ease;
-      box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+      gap: 4px;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.5);
     }
     .btn:hover {
-      background: rgba(36, 46, 68, 0.95);
-      border-color: rgba(255, 255, 255, 0.35);
-      transform: translateY(-1px);
+      background: linear-gradient(180deg, rgba(38, 50, 82, 0.96) 0%, rgba(20, 28, 48, 0.98) 100%);
+      border-color: rgba(212, 175, 55, 0.75);
+      color: #ffe89e;
+      transform: translateY(-1.5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65), 0 0 14px rgba(212, 175, 55, 0.3);
     }
     .btn.active {
-      border-color: var(--mygo-color);
-      color: var(--mygo-color);
-      box-shadow: 0 0 16px rgba(91, 155, 213, 0.45);
+      border-color: rgba(91, 155, 213, 0.9);
+      color: #a8d8ff;
+      background: linear-gradient(180deg, rgba(28, 52, 88, 0.94) 0%, rgba(14, 24, 44, 0.96) 100%);
+      box-shadow: 0 0 16px rgba(91, 155, 213, 0.42), inset 0 0 10px rgba(91, 155, 213, 0.22);
     }
 
-    /* Filter Bar */
+    /* Filter Bar - Astral Constellation Tabs */
     .filter-bar {
       position: absolute;
-      top: 80px; left: 16px;
+      top: 72px; left: 16px;
       display: flex;
       flex-wrap: wrap;
       gap: 8px;
       z-index: 10;
-      max-width: 860px;
+      max-width: 920px;
     }
     .filter-pill {
-      background: rgba(20, 26, 40, 0.85);
+      background: linear-gradient(135deg, rgba(14, 19, 34, 0.88), rgba(9, 12, 22, 0.92));
       backdrop-filter: blur(12px);
-      border: 1px solid var(--panel-border);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
       color: var(--text-muted);
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-size: 12px;
+      padding: 6px 16px;
+      font-size: 11.5px;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       align-items: center;
       gap: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
     }
-    .filter-pill:hover { color: #fff; border-color: rgba(255,255,255,0.35); }
-    .filter-pill.active {
-      background: rgba(91, 155, 213, 0.25);
-      border-color: var(--mygo-color);
+    .filter-pill:hover {
       color: #fff;
-      font-weight: 600;
-      box-shadow: 0 0 12px rgba(91, 155, 213, 0.35);
+      border-color: rgba(212, 175, 55, 0.6);
+      transform: translateY(-1px);
+    }
+    .filter-pill.active {
+      background: linear-gradient(135deg, rgba(91, 155, 213, 0.42), rgba(212, 175, 55, 0.22));
+      border-color: #8ac8ff;
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 0 18px rgba(91, 155, 213, 0.5);
+    }
+    .filter-pill[data-filter="mujica"].active {
+      background: linear-gradient(135deg, rgba(212, 175, 55, 0.42), rgba(101, 62, 155, 0.38));
+      border-color: #f3d266;
+      color: #fff3c4;
+      box-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
     }
     .filter-pill.special-other {
-      border-color: rgba(255, 140, 178, 0.45);
-      background: rgba(255, 140, 178, 0.14);
-      color: #ffb8d1;
+      border-color: rgba(255, 140, 178, 0.5);
+      background: linear-gradient(135deg, rgba(255, 140, 178, 0.18), rgba(101, 62, 155, 0.18));
+      color: #ffc4da;
     }
     .filter-pill.special-other.active {
       border-color: #ff8cb2;
-      background: rgba(255, 140, 178, 0.3);
+      background: linear-gradient(135deg, rgba(255, 140, 178, 0.42), rgba(167, 139, 250, 0.3));
       color: #fff;
-      box-shadow: 0 0 14px rgba(255, 140, 178, 0.45);
+      box-shadow: 0 0 18px rgba(255, 140, 178, 0.55);
     }
 
     /* Search Box */
     .search-box {
       position: relative;
-      width: 220px;
+      width: 154px;
     }
     .search-input {
       width: 100%;
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--panel-border);
+      background: rgba(12, 16, 30, 0.90);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
       color: #fff;
-      border-radius: 8px;
-      padding: 7px 12px 7px 32px;
-      font-size: 12px;
+      padding: 6.5px 10px 6.5px 28px;
+      font-size: 11px;
       outline: none;
+      transition: all 0.2s ease;
     }
-    .search-input:focus { border-color: var(--mygo-color); }
+    .search-input::placeholder { color: rgba(154, 176, 204, 0.68); }
+    .search-input:focus {
+      border-color: #d4af37;
+      box-shadow: 0 0 16px rgba(212, 175, 55, 0.38);
+    }
     .search-icon {
       position: absolute;
-      left: 10px; top: 50%;
+      left: 9px; top: 50%;
       transform: translateY(-50%);
-      font-size: 12px;
-      color: var(--text-muted);
+      font-size: 11px;
+      color: #d4af37;
+      pointer-events: none;
     }
 
-    /* Bottom Character Roster */
+    /* Bottom Character Roster - Astral Constellation Dock */
     .roster-container {
       position: absolute;
-      bottom: 20px; left: 50%;
+      bottom: 18px; left: 50%;
       transform: translateX(-50%);
       display: flex;
-      gap: 8px;
-      background: var(--panel-bg);
-      backdrop-filter: blur(24px);
-      border: 1px solid var(--panel-border);
-      padding: 7px 14px;
-      border-radius: 40px;
-      box-shadow: 0 12px 36px rgba(0,0,0,0.6);
+      gap: 10px;
+      background: linear-gradient(180deg, rgba(16, 22, 40, 0.92) 0%, rgba(8, 11, 22, 0.96) 100%);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(212, 175, 55, 0.38);
+      clip-path: polygon(16px 0, calc(100% - 16px) 0, 100% 50%, calc(100% - 16px) 100%, 16px 100%, 0 50%);
+      padding: 8px 26px;
+      box-shadow: 0 16px 44px rgba(0, 0, 0, 0.82), inset 0 1px 0 rgba(255, 232, 160, 0.28), 0 0 32px rgba(91, 155, 213, 0.18);
       z-index: 10;
       max-width: 95vw;
       overflow-x: auto;
@@ -212,155 +352,321 @@
       align-items: center;
       gap: 4px;
       cursor: pointer;
-      transition: transform 0.2s ease;
+      transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
+      padding: 2px 3px;
     }
-    .roster-item:hover { transform: translateY(-4px); }
+    .roster-item:hover { transform: translateY(-6px) scale(1.05); }
     .roster-avatar {
       width: 44px; height: 44px;
       border-radius: 50%;
       border: 2px solid var(--item-color);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.7), 0 0 12px var(--item-glow, rgba(255,255,255,0.12));
       background-size: cover;
       background-position: center;
-      transition: all 0.2s;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+    }
+    .roster-avatar::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px dashed var(--item-color);
+      opacity: 0.45;
+      transition: all 0.3s ease;
+    }
+    .roster-item:hover .roster-avatar::after,
+    .roster-item.active .roster-avatar::after {
+      opacity: 1;
+      transform: rotate(90deg) scale(1.06);
+      border-color: #fff;
     }
     .roster-item.active .roster-avatar {
       transform: scale(1.16);
       border-color: #fff;
-      box-shadow: 0 0 18px var(--item-color);
+      box-shadow: 0 0 22px var(--item-color), 0 0 8px #fff;
     }
     .roster-name {
       font-size: 10.5px;
       color: var(--text-muted);
-      font-weight: 600;
+      font-weight: 700;
       white-space: nowrap;
+      transition: all 0.2s ease;
     }
-    .roster-item.active .roster-name { color: #fff; }
+    .roster-item:hover .roster-name,
+    .roster-item.active .roster-name {
+      color: #fff;
+      text-shadow: 0 0 10px var(--item-color);
+    }
 
-    /* Side Detail Drawer */
+    /* Side Detail Drawer - Tarot Stage Theater */
     .drawer {
       position: absolute;
-      top: 0; right: -460px;
-      width: 440px; height: 100%;
-      background: rgba(18, 24, 38, 0.96);
-      backdrop-filter: blur(28px);
-      border-left: 1px solid var(--panel-border);
-      box-shadow: -14px 0 44px rgba(0,0,0,0.75);
+      top: 0; right: -470px;
+      width: 445px; height: 100%;
+      background:
+        radial-gradient(circle at 90% 10%, var(--char-accent-soft) 0%, transparent 55%),
+        linear-gradient(165deg, rgba(14, 18, 34, 0.96) 0%, rgba(7, 9, 18, 0.99) 100%);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border-left: 1.5px solid var(--char-accent, rgba(212, 175, 55, 0.45));
+      box-shadow: -20px 0 60px rgba(0, 0, 0, 0.88), -2px 0 28px var(--char-accent-soft);
       z-index: 20;
-      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: right 0.36s cubic-bezier(0.16, 1, 0.3, 1);
       display: flex;
       flex-direction: column;
       overflow: hidden;
     }
     .drawer.open { right: 0; }
     .drawer-header {
-      padding: 20px;
-      border-bottom: 1px solid var(--panel-border);
+      padding: 20px 22px 16px;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.22);
+      background: linear-gradient(90deg, var(--char-accent-soft) 0%, transparent 85%);
       position: relative;
     }
     .drawer-close {
       position: absolute;
       top: 18px; right: 18px;
-      background: none; border: none;
-      color: var(--text-muted);
-      font-size: 22px;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      color: #ffe28a;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       cursor: pointer;
+      transition: all 0.25s ease;
     }
-    .drawer-close:hover { color: #fff; }
+    .drawer-close:hover {
+      color: #fff;
+      background: rgba(212, 175, 55, 0.25);
+      transform: rotate(90deg) scale(1.08);
+    }
     .drawer-badge {
-      display: inline-block;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 3px 10px;
+      clip-path: polygon(6px 0, 100% 0, calc(100% - 6px) 100%, 0 100%);
       margin-bottom: 8px;
+      border: 1px solid var(--char-accent);
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
     }
-    .drawer-title { font-size: 18px; font-weight: 700; }
-    .drawer-sub { font-size: 12px; color: var(--text-muted); margin-top: 4px; }
+    .drawer-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+      text-shadow: 0 0 16px var(--char-accent-soft), 0 2px 10px rgba(0, 0, 0, 0.8);
+    }
+    .drawer-sub {
+      font-size: 12px;
+      color: #b8cbe2;
+      margin-top: 5px;
+    }
     .drawer-content {
-      padding: 20px;
+      padding: 18px 22px 28px;
       overflow-y: auto;
       flex: 1;
+      scrollbar-width: thin;
+      scrollbar-color: var(--char-accent) transparent;
     }
 
-    /* Standing Art Card in Drawer */
+    /* Tarot Stage Showcase Card in Drawer */
     .standing-art-card {
       width: 100%;
-      height: 380px;
-      border-radius: 14px;
-      background: radial-gradient(circle at 50% 30%, rgba(255,255,255,0.08) 0%, rgba(10,14,24,0.85) 100%);
-      border: 1px solid rgba(255,255,255,0.12);
+      height: 400px;
+      border-radius: 16px;
+      background:
+        radial-gradient(ellipse at 50% 0%, var(--char-accent-glow) 0%, transparent 65%),
+        radial-gradient(circle at 50% 55%, var(--char-accent-soft) 0%, rgba(10, 14, 26, 0.85) 68%, rgba(5, 7, 14, 0.98) 100%);
+      border: 1px solid rgba(212, 175, 55, 0.32);
       position: relative;
       overflow: hidden;
       display: flex;
       align-items: flex-end;
       justify-content: center;
       margin-bottom: 16px;
-      box-shadow: inset 0 0 24px rgba(0,0,0,0.6);
+      box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.85), 0 10px 28px rgba(0, 0, 0, 0.6), 0 0 20px var(--char-accent-soft);
+    }
+    /* Rotating Astrolabe Halo behind Character Standing Art */
+    .standing-astrolabe {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 290px; height: 290px;
+      margin-top: -155px; margin-left: -145px;
+      border-radius: 50%;
+      border: 1.5px dashed var(--char-accent);
+      box-shadow: 0 0 30px var(--char-accent-soft), inset 0 0 30px var(--char-accent-soft);
+      opacity: 0.38;
+      pointer-events: none;
+      animation: spinAstrolabe 28s linear infinite;
+      z-index: 1;
+    }
+    .standing-astrolabe::before {
+      content: "";
+      position: absolute;
+      inset: 22px;
+      border-radius: 50%;
+      border: 1px solid rgba(212, 175, 55, 0.5);
+    }
+    .standing-astrolabe::after {
+      content: "✦ I · II · III · IV · V · VI · VII · VIII · IX · X · XI · XII ✦";
+      position: absolute;
+      top: -18px; left: 50%;
+      transform: translateX(-50%);
+      font-family: var(--font-serif);
+      font-size: 8px;
+      letter-spacing: 2px;
+      color: var(--char-accent);
+      white-space: nowrap;
+    }
+    @keyframes spinAstrolabe {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+    /* Animated Audio Equalizer Bars at Stage Bottom */
+    .stage-eq-bars {
+      position: absolute;
+      bottom: 0; left: 16px; right: 16px;
+      height: 26px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      gap: 4px;
+      z-index: 3;
+      pointer-events: none;
+      opacity: 0.65;
+    }
+    .stage-eq-bar {
+      width: 3px;
+      background: linear-gradient(180deg, #fff, var(--char-accent));
+      border-radius: 2px 2px 0 0;
+      animation: eqBounce 1.2s ease-in-out infinite alternate;
+    }
+    @keyframes eqBounce {
+      0% { height: 4px; opacity: 0.4; }
+      100% { height: 22px; opacity: 0.95; }
+    }
+    .standing-watermark {
+      position: absolute;
+      bottom: 18px;
+      left: 16px;
+      font-family: var(--font-serif);
+      font-size: 34px;
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.08);
+      text-shadow: 0 0 20px var(--char-accent-soft);
+      pointer-events: none;
+      line-height: 1;
+      z-index: 1;
     }
     .standing-art-img {
-      height: 94%;
+      height: 95%;
       object-fit: contain;
-      filter: drop-shadow(0 12px 20px rgba(0,0,0,0.8));
-      transition: all 0.25s ease;
+      filter: drop-shadow(0 14px 24px rgba(0, 0, 0, 0.92)) drop-shadow(0 0 20px var(--char-accent-soft));
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      z-index: 2;
+    }
+    .standing-art-img:hover {
+      transform: scale(1.03);
     }
     .form-switcher {
       position: absolute;
       top: 12px; right: 12px;
       display: flex;
       gap: 6px;
-      background: rgba(0,0,0,0.7);
+      background: rgba(8, 11, 22, 0.88);
       backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
       padding: 4px;
       border-radius: 8px;
-      border: 1px solid rgba(255,255,255,0.18);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      z-index: 5;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.65);
     }
     .form-btn {
       background: none; border: none;
       color: var(--text-muted);
       font-size: 11px;
       font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 4px 10px;
+      border-radius: 5px;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
+    .form-btn:hover { color: #fff; }
     .form-btn.active {
-      background: var(--mujica-color);
-      color: #000;
+      background: linear-gradient(135deg, #f3d266, #c59b27);
+      color: #090c16;
+      box-shadow: 0 0 14px rgba(212, 175, 55, 0.6);
     }
 
     .drawer-quote {
-      background: rgba(255, 255, 255, 0.04);
-      border-left: 3px solid var(--mygo-color);
-      padding: 12px 14px;
-      border-radius: 0 8px 8px 0;
-      font-size: 12.5px;
-      line-height: 1.6;
-      color: #d1d9e6;
+      background: linear-gradient(90deg, var(--char-accent-soft) 0%, rgba(255, 255, 255, 0.02) 100%);
+      border-left: 3px solid var(--char-accent, var(--mujica-color));
+      padding: 13px 16px;
+      border-radius: 0 10px 10px 0;
+      font-family: var(--font-serif);
+      font-size: 13px;
+      line-height: 1.68;
+      color: #eef4fc;
       margin-bottom: 16px;
       font-style: italic;
+      position: relative;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.08);
     }
     .drawer-section-title {
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--text-muted);
+      font-size: 11px;
+      font-weight: 800;
+      color: #ebd084;
       text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 16px 0 8px 0;
+      letter-spacing: 1.2px;
+      margin: 18px 0 8px 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .drawer-section-title::before {
+      content: "✦";
+      color: var(--char-accent, #d4af37);
+      font-size: 12px;
     }
     .info-card {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 8px;
-      padding: 12px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.015));
+      border: 1px solid rgba(255, 255, 255, 0.10);
+      border-radius: 10px;
+      padding: 12px 14px;
       margin-bottom: 12px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
     }
     .info-row {
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 12px;
-      margin-bottom: 6px;
+      padding: 5px 0;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.07);
+    }
+    .info-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .info-row:first-child { padding-top: 0; }
+    .info-row.clickable-bond {
+      cursor: pointer;
+      padding: 6px 6px;
+      margin: 0 -6px;
+      border-radius: 6px;
+      transition: background 0.18s ease;
+    }
+    .info-row.clickable-bond:hover {
+      background: rgba(212, 175, 55, 0.12);
     }
     .info-label { color: var(--text-muted); }
     .info-val { font-weight: 600; color: #fff; }
@@ -368,18 +674,127 @@
     /* Hints Panel */
     .interaction-hints {
       position: absolute;
-      bottom: 20px; right: 16px;
-      background: var(--panel-bg);
-      backdrop-filter: blur(16px);
-      border: 1px solid var(--panel-border);
-      border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 11.5px;
+      bottom: 18px; right: 16px;
+      background: linear-gradient(135deg, rgba(14, 19, 36, 0.90), rgba(8, 11, 22, 0.94));
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(212, 175, 55, 0.32);
+      clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+      padding: 9px 15px;
+      font-size: 11px;
       color: var(--text-muted);
       z-index: 10;
+      line-height: 1.55;
+      box-shadow: 0 8px 28px rgba(0, 0, 0, 0.65);
+    }
+
+    /* ── 都外·远征微缩雷达坞（v2.5.0，轻量：纯 CSS 过渡，事件驱动）── */
+    .off-map-dock {
+      position: absolute;
+      top: 72px; right: 16px;
+      z-index: 12;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: opacity 0.3s ease, transform 0.3s ease;
+      pointer-events: none;
+    }
+    .off-map-dock.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .dock-badge {
+      background: rgba(22, 28, 42, 0.92);
+      border: 1px solid rgba(162, 155, 254, 0.45);
+      color: #a29bfe;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45);
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+    .dock-badge:hover {
+      transform: scale(1.05);
+      border-color: rgba(162, 155, 254, 0.85);
+    }
+    .dock-pulse {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #a29bfe;
+      box-shadow: 0 0 8px #a29bfe;
+      animation: dockPulse 2s ease-in-out infinite;
+    }
+    @keyframes dockPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
+    }
+    .dock-count {
+      background: rgba(162, 155, 254, 0.2);
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-size: 10px;
+    }
+    .off-map-drawer {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 340px;
+      max-width: 90vw;
+      background: rgba(18, 22, 34, 0.96);
+      border-left: 1px solid rgba(255,255,255,0.08);
+      z-index: 100;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 40px rgba(0,0,0,0.6);
+    }
+    .off-map-drawer.open {
+      transform: translateX(0);
+    }
+    .off-map-drawer-header {
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .off-map-drawer-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #a29bfe;
+    }
+    .off-map-drawer-body {
+      padding: 16px 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .off-map-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(162, 155, 254, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .off-map-card-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+    .off-map-card-char { color: #fff; }
+    .off-map-card-dest { color: #a29bfe; font-size: 11px; }
+    .off-map-card-action {
+      font-size: 11.5px;
+      color: var(--text-muted);
       line-height: 1.5;
     }
-  
+
     /* Landscape Compact Mode (zcode patch) */
     @media (max-width: 920px) and (orientation: landscape) {
       .top-bar { flex-direction: row !important; align-items: center !important; top: 8px !important; left: 8px !important; right: 8px !important; gap: 8px !important; }
@@ -466,122 +881,7 @@
       .off-map-drawer { width: 78vw; }
 
     }
-    
-    /* ── 都外·远征微缩雷达坞（v2.5.0，轻量：纯 CSS 过渡，事件驱动）── */
-    .off-map-dock {
-      position: absolute;
-      top: 72px; right: 16px;
-      z-index: 12;
-      opacity: 0;
-      transform: translateY(-8px);
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      pointer-events: none;
-    }
-    .off-map-dock.visible {
-      opacity: 1;
-      transform: translateY(0);
-      pointer-events: auto;
-    }
-    .dock-badge {
-      background: rgba(22, 28, 42, 0.92);
-      border: 1px solid rgba(162, 155, 254, 0.4);
-      color: #a29bfe;
-      padding: 6px 12px;
-      border-radius: 20px;
-      font-size: 11.5px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-      transition: transform 0.2s ease, border-color 0.2s ease;
-    }
-    .dock-badge:hover {
-      transform: scale(1.05);
-      border-color: rgba(162, 155, 254, 0.8);
-    }
-    .dock-pulse {
-      width: 7px; height: 7px;
-      border-radius: 50%;
-      background: #a29bfe;
-      box-shadow: 0 0 8px #a29bfe;
-      animation: dockPulse 2s ease-in-out infinite;
-    }
-    @keyframes dockPulse {
-      0%, 100% { opacity: 0.5; }
-      50% { opacity: 1; }
-    }
-    .dock-count {
-      background: rgba(162, 155, 254, 0.2);
-      padding: 1px 6px;
-      border-radius: 10px;
-      font-size: 10px;
-    }
-    .off-map-drawer {
-      position: fixed;
-      top: 0; right: 0; bottom: 0;
-      width: 340px;
-      max-width: 90vw;
-      background: rgba(18, 22, 34, 0.96);
-      border-left: 1px solid rgba(255,255,255,0.08);
-      z-index: 100;
-      transform: translateX(100%);
-      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-      display: flex;
-      flex-direction: column;
-      box-shadow: -10px 0 40px rgba(0,0,0,0.6);
-    }
-    .off-map-drawer.open {
-      transform: translateX(0);
-    }
-    .off-map-drawer-header {
-      padding: 16px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid rgba(255,255,255,0.08);
-    }
-    .off-map-drawer-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #a29bfe;
-    }
-    .drawer-close {
-      background: none;
-      border: none;
-      color: var(--text-muted);
-      font-size: 20px;
-      cursor: pointer;
-      padding: 0 4px;
-    }
-    .off-map-drawer-body {
-      padding: 16px 20px;
-      overflow-y: auto;
-      flex: 1;
-    }
-    .off-map-card {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(162, 155, 254, 0.2);
-      border-radius: 8px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .off-map-card-header {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-    .off-map-card-char { color: #fff; }
-    .off-map-card-dest { color: #a29bfe; font-size: 11px; }
-    .off-map-card-action {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      line-height: 1.5;
-    }
-    </style>
+  </style>
 </head>
 <body>
   <div id="canvas-container">
@@ -592,47 +892,47 @@
   <div class="top-bar">
     <div class="top-left">
       <div class="brand-card">
-        <div style="font-size: 20px;">🌆</div>
+        <div class="brand-emblem">⚜️</div>
         <div style="display:flex; flex-direction:column;">
           <div class="brand-title">
             <span>BanG Dream! 乐团概念地图</span>
             <span class="brand-badge-mygo">MyGO!!!!!</span>
             <span class="brand-badge-mujica">Ave Mujica</span>
           </div>
-          <div style="font-size: 10.5px; color: var(--text-muted); margin-top: 1px;">ANIME WORLD MAP & REAL-TIME EVENT LOCATIONS</div>
+          <div class="brand-subtitle">ASTRAL CLOCKWORK &amp; HOLOGRAPHIC TOKYO SANDBOX</div>
         </div>
         <div class="time-indicator" id="timeIndicator">
           <div class="time-dot"></div>
           <span id="timeText">周五 21:11 JST (夜间)</span>
         </div>
-        <div class="weather-indicator" id="weatherIndicator" style="display:inline-flex; align-items:center; gap:5px; font-size:11px; color:#a0aec0; background:rgba(255,255,255,0.06); padding:2px 8px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); margin-left:8px;">
+        <div class="weather-indicator" id="weatherIndicator">
           <span id="weatherIcon">✨</span>
           <span id="weatherText">东京 17°C · 澄澈星原</span>
         </div>
       </div>
 
       <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" class="search-input" placeholder="搜索人物 / 当前位置 / 台词...">
+        <span class="search-icon">✦</span>
+        <input type="text" id="searchInput" class="search-input" placeholder="检索角色 / 据点 / 台词...">
       </div>
     </div>
 
     <div class="top-right">
-      <button class="btn active" id="btnBonds">🕸️ 羁绊连线</button>
-      <button class="btn active" id="btnTerrain">🏘️ 区域风貌</button>
-      <button class="btn active" id="btnSnapMode">🧲 弹性吸附 [开]</button>
+      <button class="btn active" id="btnBonds">🕸️ 羁绊星轨</button>
+      <button class="btn active" id="btnTerrain">🏛️ 全息街区</button>
+      <button class="btn active" id="btnSnapMode">🧲 星盘引力 [开]</button>
       <button class="btn active" id="btnAudioToggle" title="祥子位移与拖拽语音">🔊 移动语音 [开]</button>
-      <button class="btn" id="btnResetView">🎯 地图复位</button>
+      <button class="btn" id="btnResetView">🎯 视角归零</button>
     </div>
   </div>
 
   <!-- Filter Bar -->
   <div class="filter-bar">
-    <div class="filter-pill active" data-filter="all">全览 (11位主角当下位置)</div>
-    <div class="filter-pill" data-filter="mygo">🔹 MyGO!!!!! 成员 (RiNG排练室)</div>
-    <div class="filter-pill" data-filter="mujica">🔸 Ave Mujica 成员</div>
-    <div class="filter-pill" data-filter="sumimi">🌸 sumimi 偶像</div>
-    <div class="filter-pill special-other" data-filter="other_spots">📌 其他 / 扩展地标库 (10处未入驻地标)</div>
+    <div class="filter-pill active" data-filter="all">⚜️ 全景星盘 (11位主角实时坐标)</div>
+    <div class="filter-pill" data-filter="mygo">🔹 MyGO!!!!! · 迷星共鸣</div>
+    <div class="filter-pill" data-filter="mujica">🔸 Ave Mujica · 假面交响</div>
+    <div class="filter-pill" data-filter="sumimi">🌸 sumimi · 星光偶像</div>
+    <div class="filter-pill special-other" data-filter="other_spots">📌 圣地巡礼 · 扩展地标档案 (10处)</div>
   </div>
 
   <!-- Bottom Character Roster -->
@@ -655,8 +955,8 @@
 
   <!-- Hints -->
   <div class="interaction-hints">
-    🌆 <strong>实时位置追踪</strong>：全员依据当前东京现实时间与昼夜作息动态漫游。<br>
-    • 拖动头像可自由移动，松手弹簧<strong>吸附回当前位置</strong>；点击查看高清全身立绘与实时心境。
+    ⚜️ <strong>命运齿轮与全息都市沙盘</strong>：实时映射东京昼夜星象与 11 人作息轨迹。<br>
+    • 拖拽角色触发<strong>引力冲击波与星尘尾迹</strong>；点击人物降下<strong>舞台追光柱</strong>并展开塔罗剧场。
   </div>
 
   <script>
@@ -985,10 +1285,13 @@
       { x: 1200, y: 220 }, { x: 1200, y: 740 }
     ];
 
-    // State Variables
+    // ==========================================
+    // ALL STATE & PARTICLE ARRAYS HOISTED AT TOP (100% TDZ-SAFE)
+    // ==========================================
     let currentFilter = 'all';
     let selectedChar = null;
     let hoveredChar = null;
+    let hoveredLandmark = null;
     let draggedChar = null;
     let isPanning = false;
     let panStart = { x: 0, y: 0 };
@@ -996,6 +1299,131 @@
     let showTerrain = true;
     let snapBackEnabled = true;
     let searchQuery = '';
+    let frame = 0;
+    let mouseScreen = { x: 720, y: 450 };
+
+    // Clock & Weather State
+    let clockMode = 'realtime';
+    let activeScenarioKey = 'twilight_ring';
+    let currentWeather = 'stars';
+    let weatherTemp = '17°C';
+    let weatherLabel = '澄澈星原';
+    let isSakikoAudioEnabled = true;
+    let isDebugMode = false;
+
+    // Interactive Shockwave Ripples (Triggered on click, drag, or voice)
+    const SHOCKWAVES = [];
+    function spawnShockwave(x, y, color) {
+      SHOCKWAVES.push({ x, y, r: 12, maxR: 220, alpha: 0.9, color: color || '#d4af37' });
+      SHOCKWAVES.push({ x, y, r: 4, maxR: 145, alpha: 0.75, color: '#ffffff' });
+      if (SHOCKWAVES.length > 24) SHOCKWAVES.splice(0, SHOCKWAVES.length - 24);
+    }
+
+    // 3D Isometric Architectural Building Clusters per District
+    const ISO_BUILDINGS = [
+      // RiNG Ikebukuro Cluster (Framing outer edges away from title banner)
+      { x: 605, y: 270, w: 36, d: 28, h: 72, color: '#5b9bd5' },
+      { x: 642, y: 295, w: 28, d: 24, h: 52, color: '#38bdf8' },
+      { x: 235, y: 495, w: 38, d: 30, h: 64, color: '#5b9bd5' },
+      { x: 280, y: 515, w: 30, d: 24, h: 46, color: '#5b9bd5' },
+      // Haneoka Academy Cluster
+      { x: 845, y: 295, w: 42, d: 30, h: 62, color: '#38bdf8' },
+      { x: 875, y: 325, w: 32, d: 24, h: 48, color: '#38bdf8' },
+      // Station Hub Cluster
+      { x: 1175, y: 325, w: 42, d: 32, h: 88, color: '#d4af37' },
+      { x: 1155, y: 455, w: 36, d: 28, h: 58, color: '#d4af37' },
+      // Hanasakigawa Cluster
+      { x: 645, y: 885, w: 42, d: 30, h: 56, color: '#ff8cb2' },
+      { x: 485, y: 895, w: 36, d: 28, h: 46, color: '#ff8cb2' },
+      // Tsukinomori Gothic Spires
+      { x: 1015, y: 785, w: 38, d: 30, h: 86, color: '#a78bfa' },
+      { x: 995, y: 905, w: 44, d: 32, h: 68, color: '#a78bfa' },
+      { x: 795, y: 905, w: 42, d: 30, h: 60, color: '#a78bfa' },
+      // Wakaba Greenhouse Conservatory
+      { x: 375, y: 885, w: 46, d: 34, h: 50, color: '#7fa97e' },
+      { x: 175, y: 895, w: 48, d: 34, h: 42, color: '#7fa97e' },
+      // Media Tower Cluster (sumimi & Nyamu)
+      { x: 1435, y: 265, w: 42, d: 34, h: 105, color: '#ff7675' },
+      { x: 1455, y: 315, w: 34, d: 28, h: 76, color: '#e2789f' },
+      { x: 1425, y: 735, w: 46, d: 34, h: 96, color: '#ff7675' },
+      { x: 1385, y: 835, w: 38, d: 30, h: 68, color: '#ff7675' }
+    ];
+
+    // Rain, Ripples, Stars, Shooting Stars, Ambient Motes, Leaves, Drag Trails
+    const RAIN_DROPS = [];
+    for (let i = 0; i < 100; i++) {
+      RAIN_DROPS.push({
+        x: Math.random() * 2000 - 200,
+        y: Math.random() * 1200,
+        len: 15 + Math.random() * 12,
+        speed: 15 + Math.random() * 8,
+        alpha: 0.28 + Math.random() * 0.35
+      });
+    }
+
+    const RIVER_RIPPLES = [];
+    for (let i = 0; i < 24; i++) {
+      RIVER_RIPPLES.push({
+        x: 180 + Math.random() * 1350,
+        y: 600 + Math.random() * 35,
+        r: Math.random() * 12,
+        maxR: 10 + Math.random() * 14,
+        alpha: Math.random()
+      });
+    }
+
+    const STAR_POINTS = [];
+    for (let i = 0; i < 110; i++) {
+      STAR_POINTS.push({
+        x: Math.random() * 1950 - 100,
+        y: Math.random() * 950 - 80,
+        baseR: 0.7 + Math.random() * 2.0,
+        phase: Math.random() * Math.PI * 2,
+        speed: 0.02 + Math.random() * 0.04,
+        isGold: Math.random() > 0.55
+      });
+    }
+
+    const CONSTELLATION_LINES = [
+      [[180, 90], [260, 65], [340, 110], [410, 85]],
+      [[620, 55], [710, 95], [790, 60], [860, 105], [710, 95]],
+      [[1120, 75], [1210, 45], [1290, 90], [1370, 65]]
+    ];
+
+    const SHOOTING_STARS = [
+      { x: 300, y: 80, vx: 9.5, vy: 3.4, len: 95, alpha: 0, cooldown: 25 },
+      { x: 1150, y: 50, vx: -9.0, vy: 3.6, len: 105, alpha: 0, cooldown: 110 }
+    ];
+
+    const AMBIENT_MOTES = [];
+    for (let i = 0; i < 52; i++) {
+      AMBIENT_MOTES.push({
+        x: 120 + Math.random() * 1420,
+        y: 120 + Math.random() * 840,
+        r: 1.1 + Math.random() * 2.0,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -0.18 - Math.random() * 0.28,
+        phase: Math.random() * Math.PI * 2,
+        color: i % 3 === 0 ? '#ffd166' : (i % 3 === 1 ? '#74b9ff' : '#c4b5fd')
+      });
+    }
+
+    const SUN_LEAVES = [];
+    for (let i = 0; i < 30; i++) {
+      SUN_LEAVES.push({
+        x: Math.random() * 1700,
+        y: Math.random() * 1000,
+        size: 3.5 + Math.random() * 3,
+        vx: 0.4 + Math.random() * 0.5,
+        vy: 0.5 + Math.random() * 0.6,
+        rot: Math.random() * Math.PI * 2,
+        vRot: (Math.random() - 0.5) * 0.04
+      });
+    }
+
+    const DRAG_TRAILS = [];
+
+    const ROMAN_NUMERALS = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
 
     // Canvas Setup
     const canvas = document.getElementById('mapCanvas');
@@ -1003,9 +1431,10 @@
     let view = { x: 0, y: 0, scale: 0.90 };
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth * window.devicePixelRatio;
-      canvas.height = window.innerHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = window.innerWidth * dpr;
+      canvas.height = window.innerHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
@@ -1026,14 +1455,30 @@
       };
     }
 
+    function spawnDragTrail(x, y, color) {
+      for (let i = 0; i < 2; i++) {
+        DRAG_TRAILS.push({
+          x: x + (Math.random() - 0.5) * 20,
+          y: y + (Math.random() - 0.5) * 20,
+          vx: (Math.random() - 0.5) * 1.4,
+          vy: (Math.random() - 0.5) * 1.4 - 0.35,
+          r: 2.2 + Math.random() * 2.8,
+          alpha: 0.92,
+          color: color
+        });
+      }
+      if (DRAG_TRAILS.length > 100) {
+        DRAG_TRAILS.splice(0, DRAG_TRAILS.length - 100);
+      }
+    }
+
     // Mouse Listeners
     container.addEventListener('mousedown', e => {
       const pos = getCanvasCoords(e);
 
-      // Character dragging
       let clicked = null;
       for (let c of CHARACTERS) {
-        if (Math.hypot(c.x - pos.x, c.y - pos.y) <= 34) {
+        if (Math.hypot(c.x - pos.x, c.y - pos.y) <= 36) {
           clicked = c;
           break;
         }
@@ -1042,15 +1487,17 @@
         draggedChar = clicked;
         container.classList.add('dragging-char');
         selectChar(clicked);
+        spawnShockwave(clicked.x, clicked.y, clicked.color);
+        spawnDragTrail(clicked.x, clicked.y, clicked.color);
         if (clicked.id === 'sakiko') {
           SAKIKO_AUDIO_SYSTEM.play('drag');
         }
         return;
       }
 
-      // Landmark click
       for (let lm of KEY_LANDMARKS) {
-        if (Math.hypot(lm.x - pos.x, lm.y - pos.y) <= 26) {
+        if (Math.hypot(lm.x - pos.x, lm.y - pos.y) <= 28) {
+          spawnShockwave(lm.x, lm.y, lm.color);
           openLandmarkDrawer(lm);
           return;
         }
@@ -1062,6 +1509,8 @@
     });
 
     window.addEventListener('mousemove', e => {
+      mouseScreen.x = e.clientX;
+      mouseScreen.y = e.clientY;
       const pos = getCanvasCoords(e);
 
       if (draggedChar) {
@@ -1069,6 +1518,7 @@
         draggedChar.y = pos.y;
         draggedChar.vx = 0;
         draggedChar.vy = 0;
+        spawnDragTrail(pos.x, pos.y, draggedChar.color);
         return;
       }
 
@@ -1080,15 +1530,26 @@
 
       hoveredChar = null;
       for (let c of CHARACTERS) {
-        if (Math.hypot(c.x - pos.x, c.y - pos.y) <= 34) {
+        if (Math.hypot(c.x - pos.x, c.y - pos.y) <= 36) {
           hoveredChar = c;
           break;
+        }
+      }
+
+      hoveredLandmark = null;
+      if (!hoveredChar) {
+        for (let lm of KEY_LANDMARKS) {
+          if (Math.hypot(lm.x - pos.x, lm.y - pos.y) <= 28) {
+            hoveredLandmark = lm;
+            break;
+          }
         }
       }
     });
 
     window.addEventListener('mouseup', () => {
       if (draggedChar) {
+        spawnShockwave(draggedChar.x, draggedChar.y, draggedChar.color);
         draggedChar = null;
         container.classList.remove('dragging-char');
       }
@@ -1122,7 +1583,6 @@
         touchState.startY = touch.clientY;
         touchState.hasMoved = false;
 
-        // Generous touch target radius (44px) for mobile fingers
         let clicked = null;
         for (let c of CHARACTERS) {
           if (Math.hypot(c.x - touchX, c.y - touchY) <= 44) {
@@ -1134,6 +1594,8 @@
         if (clicked) {
           draggedChar = clicked;
           container.classList.add('dragging-char');
+          spawnShockwave(clicked.x, clicked.y, clicked.color);
+          spawnDragTrail(clicked.x, clicked.y, clicked.color);
           if (clicked.id === 'sakiko') {
             SAKIKO_AUDIO_SYSTEM.play('drag');
           }
@@ -1141,21 +1603,19 @@
           return;
         }
 
-        // Check key landmark hit
         for (let lm of KEY_LANDMARKS) {
           if (Math.hypot(lm.x - touchX, lm.y - touchY) <= 36) {
+            spawnShockwave(lm.x, lm.y, lm.color);
             openLandmarkDrawer(lm);
             e.preventDefault();
             return;
           }
         }
 
-        // Panning with 1 finger
         isPanning = true;
         panStart = { x: touch.clientX - view.x, y: touch.clientY - view.y };
         e.preventDefault();
       } else if (e.touches.length === 2) {
-        // Pinch zoom
         e.preventDefault();
         isPanning = false;
         draggedChar = null;
@@ -1186,6 +1646,7 @@
           draggedChar.y = touchY;
           draggedChar.vx = 0;
           draggedChar.vy = 0;
+          spawnDragTrail(touchX, touchY, draggedChar.color);
           return;
         }
 
@@ -1194,7 +1655,6 @@
           view.y = touch.clientY - panStart.y;
         }
       } else if (e.touches.length === 2) {
-        // Two-finger pinch zoom
         const t1 = e.touches[0];
         const t2 = e.touches[1];
         const currentDist = Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
@@ -1217,7 +1677,6 @@
 
       if (e.touches.length === 0) {
         if (draggedChar) {
-          // If barely moved, treat as tap to inspect
           if (!touchState.hasMoved) {
             selectChar(draggedChar);
           }
@@ -1240,8 +1699,6 @@
       touchState.initialDist = 0;
       container.classList.remove('dragging-char');
     });
-
-
 
     canvas.addEventListener('wheel', e => {
       e.preventDefault();
@@ -1273,6 +1730,10 @@
         c.x += c.vx;
         c.y += c.vy;
 
+        if (Math.hypot(c.vx, c.vy) > 1.2 && frame % 2 === 0) {
+          spawnDragTrail(c.x, c.y, c.color);
+        }
+
         if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1 && Math.abs(c.vx) < 0.05 && Math.abs(c.vy) < 0.05) {
           c.x = c.ox;
           c.y = c.oy;
@@ -1286,7 +1747,7 @@
     function renderRoster() {
       const container = document.getElementById('rosterContainer');
       container.innerHTML = CHARACTERS.map(c => `
-        <div class="roster-item ${selectedChar && selectedChar.id === c.id ? 'active' : ''}" data-id="${c.id}" style="--item-color:${c.color}">
+        <div class="roster-item ${selectedChar && selectedChar.id === c.id ? 'active' : ''}" data-id="${c.id}" style="--item-color:${c.color}; --item-glow:${c.color}55;">
           <div class="roster-avatar" style="background-image: url('${NAV_AVATARS[c.id]}');"></div>
           <span class="roster-name">${c.name}</span>
         </div>
@@ -1298,6 +1759,7 @@
           const target = CHARACTERS.find(x => x.id === cid);
           if (target) {
             selectChar(target);
+            spawnShockwave(target.x, target.y, target.color);
             view.x = (window.innerWidth / 2) - target.ox * view.scale;
             view.y = (window.innerHeight / 2) - target.oy * view.scale;
           }
@@ -1305,18 +1767,26 @@
       });
     }
 
-    // Detail Drawer
+    // Detail Drawer - Tarot Stage Theater
     const drawer = document.getElementById('sideDrawer');
     document.getElementById('drawerClose').addEventListener('click', closeDrawer);
 
+    function setDrawerAccent(colorHex) {
+      drawer.style.setProperty('--char-accent', colorHex);
+      drawer.style.setProperty('--char-accent-soft', colorHex + '2e');
+      drawer.style.setProperty('--char-accent-glow', colorHex + '55');
+    }
+
     function selectChar(c) {
       selectedChar = c;
+      setDrawerAccent(c.color);
       drawer.classList.add('open');
       renderRoster();
 
       const hasMultipleForms = BODY_ART[c.id] && Object.keys(BODY_ART[c.id]).length > 1;
       const currentForm = c.currentForm || 'uniform';
       const bodySrc = (BODY_ART[c.id] && BODY_ART[c.id][currentForm]) || NAV_AVATARS[c.id];
+      const watermarkText = (c.romaji.split('/')[0] || c.id).trim().toUpperCase();
 
       let formSwitcherHtml = '';
       if (hasMultipleForms) {
@@ -1328,28 +1798,46 @@
         `;
       }
 
+      // Generate 18 animated stage equalizer bars
+      let eqBarsHtml = '<div class="stage-eq-bars">';
+      for (let i = 0; i < 20; i++) {
+        const delay = (i * 0.09).toFixed(2);
+        const dur = (0.7 + (i % 5) * 0.18).toFixed(2);
+        eqBarsHtml += `<div class="stage-eq-bar" style="animation-delay:${delay}s; animation-duration:${dur}s;"></div>`;
+      }
+      eqBarsHtml += '</div>';
+
       const relatedBonds = BONDS.filter(b => b.from === c.id || b.to === c.id);
       const bondListHtml = relatedBonds.map(b => {
         const otherId = b.from === c.id ? b.to : b.from;
         const other = CHARACTERS.find(x => x.id === otherId);
-        return `<div class="info-row"><span class="info-label">${other.name}</span><span class="info-val" style="color:${b.color}">${b.label}</span></div>`;
+        return `<div class="info-row clickable-bond" onclick="focusCharById('${other.id}')" title="点击聚焦 ${other.name}">
+          <span class="info-label" style="display:inline-flex;align-items:center;gap:6px;">
+            <span style="width:7px;height:7px;border-radius:50%;background:${other.color};box-shadow:0 0 6px ${other.color};display:inline-block;"></span>
+            ${other.name}
+          </span>
+          <span class="info-val" style="color:${b.color}">${b.label} ➔</span>
+        </div>`;
       }).join('');
 
-      document.getElementById('drawerBadge').innerText = `${c.band} · ${c.role}`;
+      document.getElementById('drawerBadge').innerText = `⚜️ ${c.band} · ${c.role}`;
       document.getElementById('drawerBadge').style.backgroundColor = `${c.color}28`;
       document.getElementById('drawerBadge').style.color = c.color;
       document.getElementById('drawerTitle').innerText = `${c.name} (${c.romaji})`;
-      document.getElementById('drawerSub').innerText = `当前位置: ${c.currentLocation}`;
+      document.getElementById('drawerSub').innerText = `📍 实时锚点: ${c.currentLocation}`;
 
       document.getElementById('drawerContent').innerHTML = `
         <div class="standing-art-card">
           ${formSwitcherHtml}
+          <div class="standing-astrolabe"></div>
+          <div class="standing-watermark">${watermarkText}</div>
+          ${eqBarsHtml}
           <img src="${bodySrc}" class="standing-art-img" id="drawerBodyImg" alt="${c.name}">
         </div>
 
-        <div class="info-card" style="border-left:3px solid #ffd166; background:rgba(255,209,102,0.06);">
-          <div style="font-size:11px; font-weight:700; color:#ffd166; margin-bottom:4px;">⏱️ 实时作息与活动追踪</div>
-          <div style="font-size:12.5px; line-height:1.5; color:#fff;">${c.currentAction}</div>
+        <div class="info-card" style="border-left:3px solid #ffd166; background:linear-gradient(90deg, rgba(255,209,102,0.12), rgba(255,255,255,0.02));">
+          <div style="font-size:11px; font-weight:800; color:#ffd166; margin-bottom:5px; letter-spacing:0.5px;">⏱️ 实时作息与活动追踪</div>
+          <div style="font-size:12.5px; line-height:1.55; color:#fff;">${c.currentAction}</div>
         </div>
 
         <div class="drawer-quote">
@@ -1357,25 +1845,25 @@
         </div>
 
         <div class="drawer-section-title">人物性格与当世心境</div>
-        <p style="font-size:12.5px; line-height:1.65; color:#c7d1df; margin-bottom: 16px;">
+        <p style="font-size:12.5px; line-height:1.68; color:#d0daea; margin-bottom: 16px;">
           ${c.desc}
         </p>
 
         <div class="drawer-section-title">世界观归属与据点</div>
         <div class="info-card">
-          <div class="info-row"><span class="info-label">所在据点</span><span class="info-val" style="color:var(--mygo-color);">${c.currentLocation}</span></div>
+          <div class="info-row"><span class="info-label">所在据点</span><span class="info-val" style="color:${c.color};">${c.currentLocation}</span></div>
           <div class="info-row"><span class="info-label">所属乐团</span><span class="info-val">${c.band}</span></div>
           <div class="info-row"><span class="info-label">日常学园</span><span class="info-val">${c.school}</span></div>
         </div>
 
-        <div class="drawer-section-title">重力羁绊网络与情感连接</div>
+        <div class="drawer-section-title">命运羁绊星轨 (点击可追光聚焦)</div>
         <div class="info-card">
           ${bondListHtml}
         </div>
 
-        <div class="drawer-section-title">物理思维图交互</div>
+        <div class="drawer-section-title">星盘物理交互</div>
         <div class="info-card" style="font-size:11.5px; color:var(--text-muted); line-height:1.6;">
-          🎯 <strong>弹性吸附机制</strong>：在左侧地图上按住 ${c.name} 的圆形头像即可任意拖拽，松开后会自动吸附弹回当前所在位置（${c.currentLocation.split(' ')[0]}）！
+          🎯 <strong>引力波与追光吸附</strong>：在沙盘上按住 ${c.name} 可任意拖拽并激起星尘冲击波，松手后沿星轨弹回当前据点（${c.currentLocation.split(' ')[0]}）。
         </div>
       `;
     }
@@ -1389,6 +1877,7 @@
     };
 
     function openLandmarkDrawer(lm) {
+      setDrawerAccent(lm.color);
       drawer.classList.add('open');
       document.getElementById('drawerBadge').innerText = '核心保留地标';
       document.getElementById('drawerBadge').style.backgroundColor = `${lm.color}28`;
@@ -1407,28 +1896,29 @@
         return false;
       });
 
-      const sectionTitle = isSchool ? '该学园就读成员 (全员档案)' : '当前位于此地的角色 (17:30 JST)';
+      const sectionTitle = isSchool ? '该学园就读成员 (全员档案)' : '当前位于此地的角色';
 
       const residentTags = residents.map(c => `
-        <span style="display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:14px; background:${c.color}25; color:${c.color}; font-size:11.5px; font-weight:700; border:1px solid ${c.color}50; cursor:pointer;" onclick="focusCharById('${c.id}')">
+        <span style="display:inline-flex; align-items:center; gap:5px; padding:5px 12px; border-radius:16px; background:${c.color}25; color:${c.color}; font-size:11.5px; font-weight:700; border:1px solid ${c.color}60; cursor:pointer; transition:all 0.2s;" onclick="focusCharById('${c.id}')">
           <span style="display:inline-block; width:7px; height:7px; border-radius:50%; background:${c.color}"></span>
           ${c.name}
         </span>
       `).join(' ');
 
       document.getElementById('drawerContent').innerHTML = `
-        <div class="info-card">
-          <div style="font-size:13px; line-height:1.6; color:#d1d9e6;">${lm.desc}</div>
+        <div class="info-card" style="border-left:3px solid ${lm.color};">
+          <div style="font-size:13px; line-height:1.65; color:#d8e2f0;">${lm.desc}</div>
         </div>
 
         <div class="drawer-section-title">${sectionTitle}</div>
         <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px;">
-          ${residentTags || '<span style="font-size:12px; color:var(--text-muted);">暂无角色关联</span>'}
+          ${residentTags || '<span style="font-size:12px; color:var(--text-muted);">当前时段暂无角色驻留此处</span>'}
         </div>
       `;
     }
 
     function openOtherSpotsDrawer() {
+      setDrawerAccent('#ff8cb2');
       drawer.classList.add('open');
       document.getElementById('drawerBadge').innerText = '扩展与待收录地标库 (10处)';
       document.getElementById('drawerBadge').style.backgroundColor = 'rgba(255, 140, 178, 0.25)';
@@ -1437,13 +1927,13 @@
       document.getElementById('drawerSub').innerText = '动画经典场景与扩展活动地址（独立收录，保持主图整洁）';
 
       const itemsHtml = EXTENDED_SPOTS.map(sp => `
-        <div class="info-card" style="margin-bottom:14px;">
+        <div class="info-card" style="margin-bottom:14px; border-left: 2px solid rgba(255, 140, 178, 0.55);">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <span style="font-weight:700; font-size:13.5px; color:#fff;">${sp.name}</span>
-            <span style="font-size:10.5px; color:var(--mygo-color); background:rgba(91,155,213,0.15); padding:1px 6px; border-radius:4px;">${sp.role}</span>
+            <span style="font-size:10.5px; color:var(--mygo-color); background:rgba(91,155,213,0.15); padding:2px 7px; border-radius:4px;">${sp.role}</span>
           </div>
           <div style="font-size:11.5px; color:#c7d1df; margin-bottom:6px; line-height:1.55;">${sp.desc}</div>
-          <div style="font-size:11px; color:#ff8cb2; font-style:italic; margin-bottom:6px;">${sp.quote}</div>
+          <div style="font-size:11.5px; color:#ffb8d1; font-style:italic; margin-bottom:6px; font-family:var(--font-serif);">${sp.quote}</div>
           <div style="font-size:10.5px; color:var(--text-muted);">出处剧集: ${sp.episodes} · 相关角色: ${sp.chars.join('、')}</div>
         </div>
       `).join('');
@@ -1458,7 +1948,12 @@
 
     window.focusCharById = function(cid) {
       const c = CHARACTERS.find(x => x.id === cid);
-      if (c) selectChar(c);
+      if (c) {
+        selectChar(c);
+        spawnShockwave(c.x, c.y, c.color);
+        view.x = (window.innerWidth / 2) - c.ox * view.scale;
+        view.y = (window.innerHeight / 2) - c.oy * view.scale;
+      }
     };
 
     function closeDrawer() {
@@ -1494,7 +1989,6 @@
       this.classList.toggle('active', showTerrain);
     });
 
-    
     const btnAudioToggle = document.getElementById('btnAudioToggle');
     if (btnAudioToggle) {
       btnAudioToggle.addEventListener('click', () => {
@@ -1513,15 +2007,164 @@
 
     document.getElementById('btnSnapMode').addEventListener('click', function() {
       snapBackEnabled = !snapBackEnabled;
-      this.innerText = snapBackEnabled ? '🧲 弹性吸附 [开]' : '🧲 自由悬停 [关]';
+      this.innerText = snapBackEnabled ? '🧲 星盘引力 [开]' : '🧲 自由悬停 [关]';
       this.classList.toggle('active', snapBackEnabled);
     });
 
     document.getElementById('btnResetView').addEventListener('click', resetView);
 
-    // --- Illustrated Anime Town Canvas Engine ---
-    let frame = 0;
+    // ==========================================
+    // GEOMETRY & HOLOGRAPHIC DRAWING HELPERS
+    // ==========================================
+    function drawRoundedRect(ctx, x, y, w, h, r) {
+      const radius = Math.min(r, w / 2, h / 2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+    }
 
+    function drawChamferRect(ctx, x, y, w, h, c) {
+      ctx.beginPath();
+      ctx.moveTo(x + c, y);
+      ctx.lineTo(x + w - c, y);
+      ctx.lineTo(x + w, y + c);
+      ctx.lineTo(x + w, y + h - c);
+      ctx.lineTo(x + w - c, y + h);
+      ctx.lineTo(x + c, y + h);
+      ctx.lineTo(x, y + h - c);
+      ctx.lineTo(x, y + c);
+      ctx.closePath();
+    }
+
+    function drawRoundedPolygon(ctx, pts, radius) {
+      if (!pts || pts.length < 3) return;
+      ctx.beginPath();
+      for (let i = 0; i < pts.length; i++) {
+        const p0 = pts[(i - 1 + pts.length) % pts.length];
+        const p1 = pts[i];
+        const p2 = pts[(i + 1) % pts.length];
+
+        const v1x = p0[0] - p1[0];
+        const v1y = p0[1] - p1[1];
+        const v2x = p2[0] - p1[0];
+        const v2y = p2[1] - p1[1];
+        const len1 = Math.hypot(v1x, v1y);
+        const len2 = Math.hypot(v2x, v2y);
+        const r = Math.min(radius, len1 * 0.35, len2 * 0.35);
+
+        const startX = p1[0] + (v1x / len1) * r;
+        const startY = p1[1] + (v1y / len1) * r;
+        const endX = p1[0] + (v2x / len2) * r;
+        const endY = p1[1] + (v2y / len2) * r;
+
+        if (i === 0) ctx.moveTo(startX, startY);
+        else ctx.lineTo(startX, startY);
+        ctx.quadraticCurveTo(p1[0], p1[1], endX, endY);
+      }
+      ctx.closePath();
+    }
+
+    function getPointOnPolyline(pts, tNorm) {
+      let totalLen = 0;
+      const segs = [];
+      for (let i = 0; i < pts.length - 1; i++) {
+        const dx = pts[i + 1][0] - pts[i][0];
+        const dy = pts[i + 1][1] - pts[i][1];
+        const l = Math.hypot(dx, dy);
+        segs.push({ x0: pts[i][0], y0: pts[i][1], dx, dy, len: l, angle: Math.atan2(dy, dx) });
+        totalLen += l;
+      }
+      let target = ((tNorm % 1) + 1) % 1 * totalLen;
+      for (let s of segs) {
+        if (target <= s.len || s === segs[segs.length - 1]) {
+          const ratio = s.len > 0 ? target / s.len : 0;
+          return {
+            x: s.x0 + s.dx * ratio,
+            y: s.y0 + s.dy * ratio,
+            angle: s.angle
+          };
+        }
+        target -= s.len;
+      }
+      return { x: pts[0][0], y: pts[0][1], angle: 0 };
+    }
+
+    // Draw a 3D Isometric Holographic Building Block
+    function drawIsoBuilding(ctx, x, y, w, d, h, colorHex, isLateNight) {
+      const isoX = (w - d) * 0.5;
+      const isoY = (w + d) * 0.26;
+      ctx.save();
+
+      // Left face
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.5, y);
+      ctx.lineTo(x, y + d * 0.28);
+      ctx.lineTo(x, y + d * 0.28 - h);
+      ctx.lineTo(x - w * 0.5, y - h);
+      ctx.closePath();
+      ctx.fillStyle = isLateNight ? 'rgba(12, 18, 34, 0.72)' : 'rgba(18, 26, 48, 0.75)';
+      ctx.fill();
+      ctx.strokeStyle = colorHex + '55';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      // Right face
+      ctx.beginPath();
+      ctx.moveTo(x, y + d * 0.28);
+      ctx.lineTo(x + d * 0.55, y - 2);
+      ctx.lineTo(x + d * 0.55, y - 2 - h);
+      ctx.lineTo(x, y + d * 0.28 - h);
+      ctx.closePath();
+      ctx.fillStyle = isLateNight ? 'rgba(8, 12, 24, 0.78)' : 'rgba(12, 18, 36, 0.82)';
+      ctx.fill();
+      ctx.strokeStyle = colorHex + '77';
+      ctx.stroke();
+
+      // Roof face
+      ctx.beginPath();
+      ctx.moveTo(x - w * 0.5, y - h);
+      ctx.lineTo(x, y + d * 0.28 - h);
+      ctx.lineTo(x + d * 0.55, y - 2 - h);
+      ctx.lineTo(x + d * 0.55 - w * 0.5, y - d * 0.26 - h);
+      ctx.closePath();
+      ctx.fillStyle = colorHex + '33';
+      ctx.fill();
+      ctx.strokeStyle = colorHex + 'aa';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      // Lit glowing window strips on left face
+      if (!isLateNight || (x % 2 === 0)) {
+        ctx.fillStyle = colorHex + '66';
+        for (let wy = y - h + 10; wy < y - 8; wy += 12) {
+          ctx.fillRect(x - w * 0.35, wy, 4, 5);
+          ctx.fillRect(x - w * 0.18, wy + 2, 4, 5);
+        }
+      }
+
+      // Rooftop beacon spire
+      ctx.beginPath();
+      ctx.moveTo(x, y - h);
+      ctx.lineTo(x, y - h - 14);
+      ctx.strokeStyle = colorHex;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+
+      const blink = Math.sin(frame * 0.08 + x) * 0.5 + 0.5;
+      ctx.beginPath();
+      ctx.arc(x, y - h - 14, 2 + blink * 1.5, 0, Math.PI * 2);
+      ctx.fillStyle = '#ffffff';
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // ==========================================
+    // GRAND ASTRAL CLOCKWORK & HOLOGRAPHIC TOKYO ENGINE
+    // ==========================================
     function render() {
       frame++;
       updatePhysics();
@@ -1531,36 +2174,41 @@
 
       ctx.clearRect(0, 0, w, h);
 
-      // 1. Warm Twilight Anime Sky Background
+      // 1. Deep Cosmic Sky, Constellation Lines & Nebula Aurora
       drawAnimeTwilightSky(w, h);
 
       ctx.save();
       ctx.translate(view.x, view.y);
       ctx.scale(view.scale, view.scale);
 
-      // 2. Illustrated Anime Town Districts & Terrain
+      // 1.5 Grand Gothic Clockwork Astrolabe & Perspective Horizon Grid
+      drawGrandClockworkAstrolabe();
+
+      // 2. Holographic Districts, Isometric 3D Architecture & Kanda River
       if (showTerrain) {
         drawAnimeTownDistricts();
       }
 
-      // 3. Railways & Tram Tracks
+      // 3. Railways & High-Speed Neon Light Trains
       drawRailways();
 
-      // 4. Warm Streetlights & Ambient Lamps
+      // 4. Warm Streetlights & Floating Fireflies
       drawStreetLights();
 
-      // 5. Key Anchor Landmarks
+      // 5. Key Anchor Landmarks with Live Audio Spectrum Rings
       drawKeyLandmarks();
 
-      // 6. Elastic Tethers during dragging
+      // 6. Elastic Energy Tethers, Shockwaves & Drag Particle Trails
+      drawShockwaves();
       drawTethers();
+      drawDragTrails();
 
-      // 7. Heavy Bonds Lines
+      // 7. Heavy Bonds Lines with Flowing Energy Photons
       if (showBonds) {
         drawBonds();
       }
 
-      // 8. Character Nodes (Real Avatars at Exact Positions)
+      // 8. Character Nodes (Tarot Prism Frames, Volumetric Spotlights & Status Tickers)
       drawCharacters();
 
       // 9. Weather Particle & Ripple Layer in World Space
@@ -1574,202 +2222,516 @@
       requestAnimationFrame(render);
     }
 
-    // Warm Twilight Sky (初秋黄昏暖阳与暮色渐变，彻底告别死黑)
+    // 1. Deep Cosmic Sky + Constellations + Twin Band Aurora
     function drawAnimeTwilightSky(w, h) {
+      const mode = activeScenarioKey || 'twilight_ring';
       const grad = ctx.createLinearGradient(0, 0, 0, h);
-      grad.addColorStop(0, '#1c192b'); // Twilight violet
-      grad.addColorStop(0.35, '#251e33'); // Dusk plum
-      grad.addColorStop(0.7, '#2b1c2b'); // Sunset warm rose
-      grad.addColorStop(1, '#1b1626'); // Evening indigo
+
+      if (mode === 'weekday_school' || mode === 'weekend_live') {
+        grad.addColorStop(0, '#0a1124');
+        grad.addColorStop(0.45, '#132242');
+        grad.addColorStop(0.8, '#1e2f52');
+        grad.addColorStop(1, '#12192e');
+      } else if (mode === 'late_night_sleep' || mode === 'night_quiet') {
+        grad.addColorStop(0, '#04060e');
+        grad.addColorStop(0.4, '#090d1e');
+        grad.addColorStop(0.78, '#11152c');
+        grad.addColorStop(1, '#070914');
+      } else {
+        grad.addColorStop(0, '#0b091a');
+        grad.addColorStop(0.38, '#19132c');
+        grad.addColorStop(0.72, '#2a1830');
+        grad.addColorStop(1, '#110d1e');
+      }
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, w, h);
 
-      // Soft ambient golden horizon glow
-      const horizonGlow = ctx.createRadialGradient(w * 0.45, h * 0.6, 50, w * 0.45, h * 0.6, Math.max(w, h) * 0.8);
-      horizonGlow.addColorStop(0, 'rgba(255, 179, 107, 0.12)');
-      horizonGlow.addColorStop(0.5, 'rgba(255, 118, 117, 0.05)');
-      horizonGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
-      ctx.fillStyle = horizonGlow;
+      // Multi-band Cosmic Nebula Aurora
+      ctx.save();
+      for (let bandIdx = 0; bandIdx < 3; bandIdx++) {
+        ctx.beginPath();
+        const baseY = h * (0.14 + bandIdx * 0.11);
+        ctx.moveTo(0, baseY);
+        for (let x = 0; x <= w; x += 50) {
+          const wave = Math.sin(x * 0.0035 + frame * 0.01 + bandIdx * 1.8) * 32 +
+                       Math.cos(x * 0.008 - frame * 0.007) * 16;
+          ctx.lineTo(x, baseY + wave);
+        }
+        ctx.lineTo(w, 0);
+        ctx.lineTo(0, 0);
+        ctx.closePath();
+        const nebGrad = ctx.createLinearGradient(0, 0, w, baseY + 80);
+        if (bandIdx === 0) {
+          nebGrad.addColorStop(0, 'rgba(91, 155, 213, 0.03)');
+          nebGrad.addColorStop(0.5, 'rgba(139, 92, 246, 0.09)');
+          nebGrad.addColorStop(1, 'rgba(212, 175, 55, 0.04)');
+        } else if (bandIdx === 1) {
+          nebGrad.addColorStop(0, 'rgba(212, 175, 55, 0.04)');
+          nebGrad.addColorStop(0.5, 'rgba(56, 189, 248, 0.07)');
+          nebGrad.addColorStop(1, 'rgba(255, 140, 178, 0.04)');
+        } else {
+          nebGrad.addColorStop(0, 'rgba(101, 62, 155, 0.05)');
+          nebGrad.addColorStop(0.5, 'rgba(212, 175, 55, 0.06)');
+          nebGrad.addColorStop(1, 'rgba(91, 155, 213, 0.03)');
+        }
+        ctx.fillStyle = nebGrad;
+        ctx.fill();
+      }
+      ctx.restore();
+
+      // Core Astral Glow behind the map center
+      const centerGlow = ctx.createRadialGradient(w * 0.48, h * 0.52, 20, w * 0.48, h * 0.52, Math.max(w, h) * 0.65);
+      centerGlow.addColorStop(0, 'rgba(212, 175, 55, 0.09)');
+      centerGlow.addColorStop(0.4, 'rgba(91, 155, 213, 0.06)');
+      centerGlow.addColorStop(1, 'rgba(0, 0, 0, 0)');
+      ctx.fillStyle = centerGlow;
       ctx.fillRect(0, 0, w, h);
     }
 
-    // Illustrated Anime Town Districts (手绘质感的街区色块与水系)
+    // 1.5 Grand Gothic Clockwork Astrolabe & 3D Perspective Grid in World Space
+    function drawGrandClockworkAstrolabe() {
+      const cx = 760;
+      const cy = 530;
+      ctx.save();
+
+      // Radial Star-Chart Ray Lines
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.055)';
+      ctx.lineWidth = 1;
+      for (let i = 0; i < 24; i++) {
+        const ang = (i * Math.PI * 2) / 24 + frame * 0.0002;
+        ctx.beginPath();
+        ctx.moveTo(cx + Math.cos(ang) * 90, cy + Math.sin(ang) * 90);
+        ctx.lineTo(cx + Math.cos(ang) * 780, cy + Math.sin(ang) * 780);
+        ctx.stroke();
+      }
+
+      // Concentric Clockwork & Astrolabe Rings
+      const rings = [
+        { r: 165, color: 'rgba(91, 155, 213, 0.14)', dash: [4, 8], w: 1.2 },
+        { r: 295, color: 'rgba(212, 175, 55, 0.16)', dash: [], w: 1.5 },
+        { r: 430, color: 'rgba(91, 155, 213, 0.13)', dash: [10, 6, 2, 6], w: 1.2 },
+        { r: 560, color: 'rgba(212, 175, 55, 0.18)', dash: [], w: 1.8 },
+        { r: 690, color: 'rgba(167, 139, 250, 0.10)', dash: [8, 14], w: 1.2 }
+      ];
+      rings.forEach(rg => {
+        ctx.beginPath();
+        ctx.arc(cx, cy, rg.r, 0, Math.PI * 2);
+        ctx.strokeStyle = rg.color;
+        ctx.lineWidth = rg.w;
+        ctx.setLineDash(rg.dash);
+        ctx.stroke();
+      });
+      ctx.setLineDash([]);
+
+      // Rotating Roman Numeral Zodiac / Masquerade Clock Ring (Ave Mujica Motif)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(frame * 0.0008);
+      ctx.font = 'bold 13px "Cinzel", serif';
+      ctx.fillStyle = 'rgba(212, 175, 55, 0.24)';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      for (let i = 0; i < 12; i++) {
+        const ang = (i * Math.PI * 2) / 12;
+        ctx.save();
+        ctx.rotate(ang);
+        ctx.fillText(ROMAN_NUMERALS[i], 0, -542);
+        // Gear tooth notch
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.22)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-6, -560);
+        ctx.lineTo(6, -560);
+        ctx.stroke();
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // Counter-rotating Giant Geometric Octagram (8-Point Star of Oblivionis)
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(-frame * 0.0006);
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.075)';
+      ctx.lineWidth = 1.2;
+      for (let sq = 0; sq < 2; sq++) {
+        ctx.save();
+        ctx.rotate((sq * Math.PI) / 4);
+        ctx.strokeRect(-295, -295, 590, 590);
+        ctx.restore();
+      }
+      ctx.restore();
+
+      // Sky Constellation Myths in Upper Map
+      ctx.strokeStyle = 'rgba(116, 185, 255, 0.18)';
+      ctx.lineWidth = 1;
+      CONSTELLATION_LINES.forEach(poly => {
+        ctx.beginPath();
+        ctx.moveTo(poly[0][0], poly[0][1]);
+        for (let i = 1; i < poly.length; i++) ctx.lineTo(poly[i][0], poly[i][1]);
+        ctx.stroke();
+        poly.forEach(pt => {
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], 2.5, 0, Math.PI * 2);
+          ctx.fillStyle = '#9cd2ff';
+          ctx.fill();
+        });
+      });
+
+      ctx.restore();
+    }
+
+    // 2. Holographic Districts, 3D Isometric Buildings & Kanda River
     function drawAnimeTownDistricts() {
-      const isLateNight = (clockMode === 'late_night_sleep');
-      // 1. Kanda River (神田川水岸) - Shimmering river with waves
+      const isLateNight = (clockMode === 'late_night_sleep' || activeScenarioKey === 'late_night_sleep');
+
+      // 2.1 Kanda River (神田川星河水岸)
+      ctx.save();
+      // Wide luminous river aura
       ctx.beginPath();
-      ctx.moveTo(100, 620);
-      ctx.bezierCurveTo(450, 590, 750, 640, 1600, 610);
-      ctx.strokeStyle = '#20344d';
+      ctx.moveTo(60, 620);
+      ctx.bezierCurveTo(450, 588, 750, 642, 1640, 608);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.14)';
+      ctx.lineWidth = 64;
+      ctx.lineCap = 'round';
+      ctx.stroke();
+
+      // Deep indigo riverbed
+      ctx.beginPath();
+      ctx.moveTo(60, 620);
+      ctx.bezierCurveTo(450, 588, 750, 642, 1640, 608);
+      ctx.strokeStyle = '#102038';
       ctx.lineWidth = 42;
       ctx.stroke();
 
+      // Neon cyan-gold water current
       ctx.beginPath();
-      ctx.moveTo(100, 620);
-      ctx.bezierCurveTo(450, 590, 750, 640, 1600, 610);
-      ctx.strokeStyle = 'rgba(100, 180, 240, 0.35)';
-      ctx.lineWidth = 14;
+      ctx.moveTo(60, 620);
+      ctx.bezierCurveTo(450, 588, 750, 642, 1640, 608);
+      ctx.strokeStyle = 'rgba(56, 189, 248, 0.38)';
+      ctx.lineWidth = 18;
       ctx.stroke();
 
-      // Shimmering wave lines
+      // Animated shimmering currents
       ctx.beginPath();
-      ctx.moveTo(100, 620);
-      ctx.bezierCurveTo(450, 590, 750, 640, 1600, 610);
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.moveTo(60, 616);
+      ctx.bezierCurveTo(450, 584, 750, 638, 1640, 604);
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.38)';
       ctx.lineWidth = 2;
-      ctx.setLineDash([8, 16]);
-      ctx.lineDashOffset = -frame * 0.4;
+      ctx.setLineDash([12, 20]);
+      ctx.lineDashOffset = -frame * 0.55;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(60, 625);
+      ctx.bezierCurveTo(450, 593, 750, 647, 1640, 613);
+      ctx.strokeStyle = 'rgba(212, 175, 55, 0.35)';
+      ctx.lineWidth = 1.6;
+      ctx.setLineDash([6, 24]);
+      ctx.lineDashOffset = frame * 0.4;
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // 2. Distinct Anime Urban Blocks (暖色调微缩城区)
+      // Iconic Footbridges across Kanda River
+      const bridges = [
+        { x: 460, y: 610, label: '千登世桥 · CHITOSE' },
+        { x: 740, y: 618, label: '面影桥 · OMOKAGE' },
+        { x: 1080, y: 616, label: '神田川栈桥 · KANDA' }
+      ];
+      bridges.forEach(br => {
+        ctx.fillStyle = 'rgba(18, 26, 46, 0.94)';
+        drawRoundedRect(ctx, br.x - 15, br.y - 27, 30, 54, 6);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(212, 175, 55, 0.65)';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        ctx.font = 'bold 9.5px sans-serif';
+        ctx.fillStyle = '#ffe28a';
+        ctx.textAlign = 'center';
+        ctx.fillText(br.label, br.x, br.y - 32);
+      });
+      ctx.restore();
+
+      // 2.2 Sculpted Polygon Hologram Sectors (Irregular Tactical & Architectural Polygons instead of plain rectangles!)
       const districts = [
         {
+          code: 'SECTOR 01 // IKEBUKURO WEST',
           name: '西池袋 · RiNG 排练街区',
           sub: 'MyGO!!!!! 五人合流合练之地',
-          pts: [[220, 200], [670, 200], [680, 550], [200, 530]],
-          fill: 'rgba(38, 48, 72, 0.55)',
-          border: 'rgba(91, 155, 213, 0.4)',
-          textColor: '#5b9bd5'
+          pts: [[205, 215], [645, 195], [685, 380], [655, 545], [225, 535], [185, 370]],
+          fill: 'rgba(24, 42, 74, 0.44)',
+          border: '#5b9bd5',
+          textColor: '#8ac8ff'
         },
         {
+          code: 'SECTOR 02 // ZOSHIGAYA HILLS',
           name: '杂司谷 · 羽丘学园文教丘陵',
           sub: '灯 / 爱音 / 祥子 求学与天台见证之地',
-          pts: [[680, 160], [880, 160], [860, 360], [670, 360]],
-          fill: 'rgba(28, 45, 64, 0.55)',
-          border: 'rgba(56, 189, 248, 0.45)',
-          textColor: '#38bdf8'
+          pts: [[675, 165], [875, 155], [900, 265], [865, 365], [685, 355], [660, 255]],
+          fill: 'rgba(20, 44, 68, 0.44)',
+          border: '#38bdf8',
+          textColor: '#7dd3fc'
         },
         {
+          code: 'SECTOR 03 // YAMANOTE HUB',
           name: '交通枢纽 · 电车转乘站台',
           sub: '祥子与初华分食热包子处',
-          pts: [[950, 260], [1220, 260], [1220, 480], [950, 480]],
-          fill: 'rgba(48, 42, 32, 0.55)',
-          border: 'rgba(212, 175, 55, 0.4)',
-          textColor: '#d4af37'
+          pts: [[945, 255], [1205, 245], [1235, 375], [1205, 485], [960, 475], [925, 365]],
+          fill: 'rgba(46, 36, 22, 0.44)',
+          border: '#d4af37',
+          textColor: '#ffe28a'
         },
         {
+          code: 'SECTOR 04 // WASEDA TERRACE',
           name: '早稻田 · 花咲川学园坡道',
           sub: '立希 / 海铃 / 初华 / 乐奈 就读之坡上传统名校',
-          pts: [[480, 680], [680, 680], [660, 920], [460, 920]],
-          fill: 'rgba(52, 30, 42, 0.55)',
-          border: 'rgba(255, 140, 178, 0.45)',
-          textColor: '#ff8cb2'
+          pts: [[470, 680], [675, 675], [700, 800], [665, 925], [475, 920], [445, 795]],
+          fill: 'rgba(52, 26, 44, 0.44)',
+          border: '#ff8cb2',
+          textColor: '#ffb3cd'
         },
         {
+          code: 'SECTOR 05 // SHIROKANEDAI',
           name: '白金台 · 月之森千金名门林荫区',
           sub: '素世与睦就读之私立贵族校舍',
-          pts: [[780, 690], [1050, 690], [1030, 930], [760, 930]],
-          fill: 'rgba(38, 28, 54, 0.55)',
-          border: 'rgba(167, 139, 250, 0.45)',
-          textColor: '#a78bfa'
+          pts: [[775, 685], [1045, 680], [1075, 810], [1035, 935], [775, 930], [745, 805]],
+          fill: 'rgba(36, 24, 60, 0.44)',
+          border: '#a78bfa',
+          textColor: '#d8b4fe'
         },
         {
+          code: 'SECTOR 06 // WAKABA CONSERVATORY',
           name: '密林温室 · 若叶家庭园',
           sub: '若叶睦修剪绿植花草处',
-          pts: [[160, 680], [420, 680], [400, 920], [140, 920]],
-          fill: 'rgba(28, 42, 34, 0.55)',
-          border: 'rgba(127, 169, 126, 0.4)',
-          textColor: '#7fa97e'
+          pts: [[155, 680], [410, 675], [430, 805], [395, 925], [150, 920], [125, 795]],
+          fill: 'rgba(20, 42, 32, 0.44)',
+          border: '#7fa97e',
+          textColor: '#a7f3d0'
         },
         {
+          code: 'SECTOR 07 // MINATO & SHIBUYA MEDIA',
           name: '传媒中心 · sumimi & 喵梦工坊',
           sub: '商业偶像舞台与短视频剪辑据点',
-          pts: [[1180, 140], [1480, 140], [1480, 860], [1180, 860]],
-          fill: 'rgba(46, 32, 42, 0.55)',
-          border: 'rgba(255, 118, 117, 0.4)',
-          textColor: '#ff7675'
+          pts: [[1195, 145], [1475, 145], [1500, 500], [1475, 860], [1195, 860], [1175, 500]],
+          fill: 'rgba(48, 24, 38, 0.44)',
+          border: '#ff7675',
+          textColor: '#fda4af'
         }
       ];
 
       districts.forEach(d => {
-        ctx.beginPath();
-        ctx.moveTo(d.pts[0][0], d.pts[0][1]);
-        for (let i = 1; i < d.pts.length; i++) ctx.lineTo(d.pts[i][0], d.pts[i][1]);
-        ctx.closePath();
-        ctx.fillStyle = isLateNight ? 'rgba(15, 20, 32, 0.28)' : d.fill;
+        ctx.save();
+        drawRoundedPolygon(ctx, d.pts, 22);
+
+        const grad = ctx.createLinearGradient(d.pts[0][0], d.pts[0][1], d.pts[3][0], d.pts[3][1]);
+        grad.addColorStop(0, isLateNight ? 'rgba(12, 16, 30, 0.38)' : d.fill);
+        grad.addColorStop(1, 'rgba(8, 11, 22, 0.25)');
+        ctx.fillStyle = grad;
         ctx.fill();
-        ctx.strokeStyle = isLateNight ? 'rgba(60, 80, 115, 0.22)' : d.border;
-        ctx.lineWidth = 1.5;
+
+        // Glowing double holographic border
+        ctx.strokeStyle = isLateNight ? (d.border + '44') : (d.border + '99');
+        ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Label
-        ctx.fillStyle = isLateNight ? 'rgba(140, 160, 195, 0.38)' : d.textColor;
-        ctx.font = 'bold 13px sans-serif';
-        ctx.textAlign = 'left';
-        ctx.fillText(d.name, d.pts[0][0] + 16, d.pts[0][1] + 24);
+        // Corner node beacons on polygon vertices
+        d.pts.forEach(pt => {
+          ctx.beginPath();
+          ctx.arc(pt[0], pt[1], 3, 0, Math.PI * 2);
+          ctx.fillStyle = d.border;
+          ctx.fill();
+        });
 
-        ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+        // Holographic Sector Header Banner
+        const lx = d.pts[0][0] + 18;
+        const ly = d.pts[0][1] + 12;
+        ctx.font = 'bold 9px "Cinzel", sans-serif';
+        ctx.fillStyle = d.border;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText('◈ ' + d.code, lx, ly);
+
+        ctx.font = 'bold 13px sans-serif';
+        const titleW = ctx.measureText(d.name).width;
+        ctx.fillStyle = 'rgba(8, 12, 24, 0.78)';
+        drawChamferRect(ctx, lx - 6, ly + 13, titleW + 16, 22, 5);
+        ctx.fill();
+        ctx.strokeStyle = d.border + '77';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = isLateNight ? 'rgba(170, 190, 220, 0.65)' : d.textColor;
+        ctx.fillText(d.name, lx + 2, ly + 17);
+
+        ctx.fillStyle = isLateNight ? 'rgba(255, 255, 255, 0.32)' : 'rgba(226, 232, 240, 0.62)';
         ctx.font = '10.5px sans-serif';
-        ctx.fillText(d.sub, d.pts[0][0] + 16, d.pts[0][1] + 40);
+        ctx.fillText(d.sub, lx + 2, ly + 39);
+        ctx.restore();
+      });
+
+      // 2.3 Draw 3D Isometric Holographic Buildings across the Sectors
+      ISO_BUILDINGS.forEach(b => {
+        drawIsoBuilding(ctx, b.x, b.y, b.w, b.d, b.h, b.color, isLateNight);
       });
     }
 
-    // Railways (山手线与樱花荒川线)
+    // 3. Railways & High-Speed Neon Light Trains
     function drawRailways() {
-      // 1. Toden Sakura Tram (都电荒川线)
-      ctx.beginPath();
-      ctx.moveTo(260, 520);
-      ctx.lineTo(480, 480);
-      ctx.lineTo(760, 420);
-      ctx.lineTo(1020, 340);
-      ctx.strokeStyle = 'rgba(255, 140, 178, 0.7)';
-      ctx.lineWidth = 4;
-      ctx.stroke();
+      const sakuraTrack = [[260, 520], [480, 480], [760, 420], [1020, 340]];
+      const jrTrack = [[600, 680], [820, 530], [1060, 390], [1200, 200]];
 
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([4, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
+      function renderTrack(pts, mainColor, glowColor, width) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.strokeStyle = glowColor;
+        ctx.lineWidth = width + 8;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.stroke();
 
-      // 2. JR Line (海铃乘坐的列车线路)
-      ctx.beginPath();
-      ctx.moveTo(600, 680);
-      ctx.lineTo(820, 530);
-      ctx.lineTo(1060, 390);
-      ctx.lineTo(1200, 200);
-      ctx.strokeStyle = 'rgba(91, 155, 213, 0.6)';
-      ctx.lineWidth = 5;
-      ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(pts[0][0], pts[0][1]);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i][0], pts[i][1]);
+        ctx.strokeStyle = mainColor;
+        ctx.lineWidth = width;
+        ctx.stroke();
 
-      ctx.strokeStyle = '#fff';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([6, 6]);
-      ctx.stroke();
-      ctx.setLineDash([]);
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.72)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([4, 7]);
+        ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.restore();
+      }
+
+      renderTrack(sakuraTrack, 'rgba(255, 140, 178, 0.78)', 'rgba(255, 140, 178, 0.22)', 4);
+      renderTrack(jrTrack, 'rgba(91, 155, 213, 0.75)', 'rgba(91, 155, 213, 0.22)', 5);
+
+      function renderLightTrain(pts, progress, colorHex) {
+        const head = getPointOnPolyline(pts, progress);
+        const tail1 = getPointOnPolyline(pts, progress - 0.032);
+        const tail2 = getPointOnPolyline(pts, progress - 0.065);
+
+        ctx.save();
+        const grad = ctx.createLinearGradient(tail2.x, tail2.y, head.x, head.y);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+        grad.addColorStop(0.55, colorHex);
+        grad.addColorStop(1, '#ffffff');
+
+        ctx.beginPath();
+        ctx.moveTo(tail2.x, tail2.y);
+        ctx.lineTo(tail1.x, tail1.y);
+        ctx.lineTo(head.x, head.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = 6.5;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+
+        const halo = ctx.createRadialGradient(head.x, head.y, 1, head.x, head.y, 20);
+        halo.addColorStop(0, 'rgba(255, 255, 255, 1)');
+        halo.addColorStop(0.45, colorHex + '99');
+        halo.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(head.x, head.y, 20, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      }
+
+      const tSakura = (frame * 0.0015) % 1;
+      const tJR = (1 - ((frame * 0.0019) % 1));
+      renderLightTrain(sakuraTrack, tSakura, '#ff8cb2');
+      renderLightTrain(jrTrack, tJR, '#5b9bd5');
     }
 
-    // Warm Ambient Streetlights (点点暖黄色路灯晕染)
+    // 4. Warm Streetlights & Floating Ambient Fireflies
     function drawStreetLights() {
       STREET_LIGHTS.forEach(sl => {
-        const flicker = Math.sin(frame * 0.05 + sl.x) * 2 + 12;
+        const flicker = Math.sin(frame * 0.05 + sl.x) * 2.5 + 16;
+        const grad = ctx.createRadialGradient(sl.x, sl.y, 1, sl.x, sl.y, flicker);
+        grad.addColorStop(0, 'rgba(255, 232, 160, 0.5)');
+        grad.addColorStop(0.45, 'rgba(212, 175, 55, 0.18)');
+        grad.addColorStop(1, 'rgba(212, 175, 55, 0)');
+
         ctx.beginPath();
         ctx.arc(sl.x, sl.y, flicker, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(255, 214, 112, 0.14)';
+        ctx.fillStyle = grad;
         ctx.fill();
 
         ctx.beginPath();
         ctx.arc(sl.x, sl.y, 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = '#ffd166';
+        ctx.fillStyle = '#ffe484';
+        ctx.fill();
+      });
+
+      AMBIENT_MOTES.forEach(m => {
+        m.x += m.vx;
+        m.y += m.vy;
+        if (m.y < 80) m.y = 950;
+        if (m.x < 80) m.x = 1520;
+        if (m.x > 1540) m.x = 100;
+
+        const alpha = 0.25 + 0.6 * (Math.sin(frame * 0.045 + m.phase) * 0.5 + 0.5);
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fillStyle = m.color === '#ffd166'
+          ? `rgba(255, 214, 112, ${alpha})`
+          : (m.color === '#74b9ff' ? `rgba(116, 185, 255, ${alpha})` : `rgba(196, 181, 253, ${alpha})`);
         ctx.fill();
       });
     }
 
-    // Key Anchor Landmarks
+    // 5. Key Anchor Landmarks with Live Circular Audio Equalizer Bars
     function drawKeyLandmarks() {
-      KEY_LANDMARKS.forEach(lm => {
-        ctx.beginPath();
-        ctx.arc(lm.x, lm.y, 24, 0, Math.PI * 2);
-        ctx.fillStyle = `${lm.color}20`;
-        ctx.fill();
+      const musicVenues = ['lm_ring', 'lm_stellar_hall', 'lm_studio_alta', 'lm_station_stage', 'lm_rehearsal_generic'];
 
+      KEY_LANDMARKS.forEach(lm => {
+        const isHovered = hoveredLandmark && hoveredLandmark.id === lm.id;
+        const isMusicVenue = musicVenues.includes(lm.id);
+
+        ctx.save();
+        // Live Circular Audio Equalizer Bars around Music Stages!
+        if (isMusicVenue) {
+          ctx.save();
+          ctx.translate(lm.x, lm.y);
+          const barCount = 20;
+          for (let i = 0; i < barCount; i++) {
+            const ang = (i * Math.PI * 2) / barCount + frame * 0.008;
+            const amp = 4 + Math.abs(Math.sin(frame * 0.09 + i * 1.7 + lm.x)) * 11;
+            const r0 = 21;
+            const r1 = r0 + amp;
+            ctx.beginPath();
+            ctx.moveTo(Math.cos(ang) * r0, Math.sin(ang) * r0);
+            ctx.lineTo(Math.cos(ang) * r1, Math.sin(ang) * r1);
+            ctx.strokeStyle = lm.color + 'aa';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+          }
+          ctx.restore();
+        } else {
+          // Rotating Astrolabe Ring for Academies & Hubs
+          ctx.save();
+          ctx.translate(lm.x, lm.y);
+          ctx.rotate(frame * 0.015 + lm.x);
+          ctx.beginPath();
+          ctx.arc(0, 0, 23, 0, Math.PI * 2);
+          ctx.strokeStyle = `${lm.color}88`;
+          ctx.lineWidth = 1.3;
+          ctx.setLineDash([5, 5]);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Core Diamond/Circle Medallion
         ctx.beginPath();
-        ctx.arc(lm.x, lm.y, 18, 0, Math.PI * 2);
-        ctx.fillStyle = 'rgba(22, 28, 42, 0.95)';
+        ctx.arc(lm.x, lm.y, 17, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(12, 16, 30, 0.96)';
         ctx.fill();
-        ctx.strokeStyle = lm.color;
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = isHovered ? '#ffffff' : lm.color;
+        ctx.lineWidth = isHovered ? 2.8 : 2;
         ctx.stroke();
 
         ctx.font = '13px sans-serif';
@@ -1777,43 +2739,98 @@
         ctx.textBaseline = 'middle';
         ctx.fillText(lm.icon, lm.x, lm.y);
 
-        ctx.font = 'bold 11px sans-serif';
+        // Chamfered Holographic Label
+        ctx.font = 'bold 10.5px sans-serif';
         ctx.textBaseline = 'top';
         const tw = ctx.measureText(lm.name).width;
-        ctx.fillStyle = 'rgba(12, 16, 26, 0.9)';
-        ctx.fillRect(lm.x - tw / 2 - 5, lm.y + 22, tw + 10, 16);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
-        ctx.strokeRect(lm.x - tw / 2 - 5, lm.y + 22, tw + 10, 16);
-        ctx.fillStyle = '#e0e8f0';
-        ctx.fillText(lm.name, lm.x, lm.y + 24);
+        const pillW = tw + 14;
+        const pillH = 18;
+        const px = lm.x - pillW / 2;
+        const py = lm.y + 24;
+
+        ctx.fillStyle = 'rgba(8, 12, 24, 0.92)';
+        drawChamferRect(ctx, px, py, pillW, pillH, 4);
+        ctx.fill();
+        ctx.strokeStyle = isHovered ? '#ffffff' : (lm.color + '88');
+        ctx.lineWidth = 1;
+        ctx.stroke();
+
+        ctx.fillStyle = '#e8f0f8';
+        ctx.fillText(lm.name, lm.x, py + 3.5);
+        ctx.restore();
       });
     }
 
-    // Elastic Tethers during drag
+    // 6. Interactive Shockwaves, Tethers & Drag Trails
+    function drawShockwaves() {
+      for (let i = SHOCKWAVES.length - 1; i >= 0; i--) {
+        const sw = SHOCKWAVES[i];
+        sw.r += (sw.maxR - sw.r) * 0.08 + 2.2;
+        sw.alpha -= 0.024;
+        if (sw.alpha <= 0.01) {
+          SHOCKWAVES.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(sw.x, sw.y, sw.r, 0, Math.PI * 2);
+        ctx.strokeStyle = sw.color;
+        ctx.globalAlpha = sw.alpha;
+        ctx.lineWidth = 2.2;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
     function drawTethers() {
       CHARACTERS.forEach(c => {
         const dist = Math.hypot(c.x - c.ox, c.y - c.oy);
         if (dist > 3) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(c.ox, c.oy, 9, 0, Math.PI * 2);
+          ctx.strokeStyle = `${c.color}aa`;
+          ctx.lineWidth = 1.6;
+          ctx.stroke();
+
           ctx.beginPath();
           ctx.moveTo(c.ox, c.oy);
           ctx.lineTo(c.x, c.y);
-          ctx.strokeStyle = draggedChar && draggedChar.id === c.id ? `${c.color}ee` : `${c.color}55`;
-          ctx.lineWidth = draggedChar && draggedChar.id === c.id ? 3 : 1.6;
-          ctx.setLineDash(draggedChar && draggedChar.id === c.id ? [4, 4] : [2, 3]);
+          ctx.strokeStyle = draggedChar && draggedChar.id === c.id ? `${c.color}ff` : `${c.color}77`;
+          ctx.lineWidth = draggedChar && draggedChar.id === c.id ? 3 : 1.8;
+          ctx.setLineDash([6, 4]);
+          ctx.lineDashOffset = -frame * 0.9;
           ctx.stroke();
           ctx.setLineDash([]);
-
-          ctx.beginPath();
-          ctx.arc(c.ox, c.oy, 4.5, 0, Math.PI * 2);
-          ctx.fillStyle = c.color;
-          ctx.fill();
+          ctx.restore();
         }
       });
     }
 
-    // Heavy Bonds
+    function drawDragTrails() {
+      for (let i = DRAG_TRAILS.length - 1; i >= 0; i--) {
+        const p = DRAG_TRAILS[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= 0.03;
+        p.r *= 0.97;
+        if (p.alpha <= 0.02) {
+          DRAG_TRAILS.splice(i, 1);
+          continue;
+        }
+        ctx.save();
+        ctx.globalAlpha = p.alpha;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = p.color;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    // 7. Heavy Bonds with Dual-Direction Energy Photons
     function drawBonds() {
-      BONDS.forEach(b => {
+      BONDS.forEach((b, idx) => {
         const c1 = CHARACTERS.find(c => c.id === b.from);
         const c2 = CHARACTERS.find(c => c.id === b.to);
         if (!c1 || !c2) return;
@@ -1822,30 +2839,80 @@
         if (currentFilter === 'mujica' && c1.band !== 'Ave Mujica' && c2.band !== 'Ave Mujica') return;
         if (currentFilter === 'sumimi' && c1.band !== 'sumimi' && c2.band !== 'sumimi') return;
 
-        const isRelated = selectedChar && (selectedChar.id === c1.id || selectedChar.id === c2.id);
+        const isRelated = (selectedChar && (selectedChar.id === c1.id || selectedChar.id === c2.id)) ||
+                          (hoveredChar && (hoveredChar.id === c1.id || hoveredChar.id === c2.id));
 
         const midX = (c1.x + c2.x) / 2;
-        const midY = (c1.y + c2.y) / 2 - 25;
+        const midY = (c1.y + c2.y) / 2 - 32;
+
+        ctx.save();
+        if (isRelated) {
+          ctx.beginPath();
+          ctx.moveTo(c1.x, c1.y);
+          ctx.quadraticCurveTo(midX, midY, c2.x, c2.y);
+          ctx.strokeStyle = `${b.color}55`;
+          ctx.lineWidth = 9;
+          ctx.stroke();
+        }
 
         ctx.beginPath();
         ctx.moveTo(c1.x, c1.y);
         ctx.quadraticCurveTo(midX, midY, c2.x, c2.y);
-        ctx.strokeStyle = isRelated ? b.color : 'rgba(255, 255, 255, 0.18)';
-        ctx.lineWidth = isRelated ? 3 : 1.3;
+        ctx.strokeStyle = isRelated ? b.color : 'rgba(212, 175, 55, 0.18)';
+        ctx.lineWidth = isRelated ? 2.8 : 1.3;
         ctx.stroke();
 
-        if (isRelated || (hoveredChar && (hoveredChar.id === c1.id || hoveredChar.id === c2.id))) {
-          ctx.fillStyle = b.color;
-          ctx.font = 'bold 11px sans-serif';
-          ctx.textAlign = 'center';
-          ctx.fillText(b.label, midX, midY - 6);
+        // Dual energy photons gliding along the fate thread
+        const speed = isRelated ? 0.0095 : 0.0045;
+        for (let pIdx = 0; pIdx < (isRelated ? 2 : 1); pIdx++) {
+          const t = ((frame * speed + idx * 0.23 + pIdx * 0.5) % 1);
+          const invT = 1 - t;
+          const px = invT * invT * c1.x + 2 * invT * t * midX + t * t * c2.x;
+          const py = invT * invT * c1.y + 2 * invT * t * midY + t * t * c2.y;
+
+          ctx.beginPath();
+          ctx.arc(px, py, isRelated ? 4 : 2.3, 0, Math.PI * 2);
+          ctx.fillStyle = isRelated ? '#ffffff' : `${b.color}bb`;
+          ctx.fill();
+
+          if (isRelated) {
+            ctx.beginPath();
+            ctx.arc(px, py, 9, 0, Math.PI * 2);
+            ctx.fillStyle = `${b.color}66`;
+            ctx.fill();
+          }
         }
+
+        if (isRelated) {
+          const apexX = 0.25 * c1.x + 0.5 * midX + 0.25 * c2.x;
+          const apexY = 0.25 * c1.y + 0.5 * midY + 0.25 * c2.y - 10;
+          ctx.font = 'bold 11px sans-serif';
+          const lw = ctx.measureText(b.label).width;
+          ctx.fillStyle = 'rgba(9, 12, 24, 0.94)';
+          drawChamferRect(ctx, apexX - lw / 2 - 8, apexY - 9, lw + 16, 18, 4);
+          ctx.fill();
+          ctx.strokeStyle = b.color;
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+
+          ctx.fillStyle = b.color;
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(b.label, apexX, apexY);
+        }
+        ctx.restore();
       });
     }
 
-    // Character Nodes (The Stars of the Town Map!)
+    // 8. Character Nodes: Volumetric Stage Spotlights, Tarot Sigil Rings & Two-Line HUD Nameplates
     function drawCharacters() {
-      CHARACTERS.forEach(c => {
+      const sortedChars = CHARACTERS.slice().sort((a, b) => {
+        const scoreA = (selectedChar && selectedChar.id === a.id ? 4 : 0) + (draggedChar && draggedChar.id === a.id ? 3 : 0) + (hoveredChar && hoveredChar.id === a.id ? 2 : 0);
+        const scoreB = (selectedChar && selectedChar.id === b.id ? 4 : 0) + (draggedChar && draggedChar.id === b.id ? 3 : 0) + (hoveredChar && hoveredChar.id === b.id ? 2 : 0);
+        return scoreA - scoreB || (a.y - b.y);
+      });
+
+      sortedChars.forEach(c => {
         if (currentFilter === 'mygo' && c.band !== 'MyGO!!!!!') return;
         if (currentFilter === 'mujica' && c.band !== 'Ave Mujica') return;
         if (currentFilter === 'sumimi' && c.band !== 'sumimi') return;
@@ -1855,21 +2922,88 @@
         const isSelected = selectedChar && selectedChar.id === c.id;
         const isHovered = hoveredChar && hoveredChar.id === c.id;
         const isDragging = draggedChar && draggedChar.id === c.id;
-        const radius = isSelected ? 30 : (isHovered || isDragging ? 28 : 25);
+        const isMujica = c.band === 'Ave Mujica';
+        const radius = isSelected ? 32 : (isHovered || isDragging ? 29 : 25);
 
-        // Ambient Aura
-        const pulse = Math.sin(frame * 0.08 + c.name.length) * 4;
+        ctx.save();
+
+        // 8.1 Heavenly Volumetric Stage Spotlight Beam when Selected or Hovered!
+        if (isSelected || isHovered) {
+          ctx.save();
+          const beamTopW = 14;
+          const beamBotW = radius * 2.5;
+          const beamGrad = ctx.createLinearGradient(c.x, c.y - 340, c.x, c.y + 20);
+          beamGrad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+          beamGrad.addColorStop(0.45, `${c.color}22`);
+          beamGrad.addColorStop(1, `${c.color}55`);
+
+          ctx.beginPath();
+          ctx.moveTo(c.x - beamTopW, c.y - 340);
+          ctx.lineTo(c.x + beamTopW, c.y - 340);
+          ctx.lineTo(c.x + beamBotW, c.y + 12);
+          ctx.lineTo(c.x - beamBotW, c.y + 12);
+          ctx.closePath();
+          ctx.fillStyle = beamGrad;
+          ctx.fill();
+
+          // Ground elliptical stage projection
+          ctx.beginPath();
+          ctx.ellipse(c.x, c.y + 10, beamBotW, 18, 0, 0, Math.PI * 2);
+          ctx.fillStyle = `${c.color}33`;
+          ctx.fill();
+          ctx.strokeStyle = isMujica ? '#d4af37' : c.color;
+          ctx.lineWidth = 1.4;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // 8.2 Ambient Aura + Always-on Band Halo Ring
+        const pulse = Math.sin(frame * 0.08 + c.name.length) * 3.5;
+        const auraGrad = ctx.createRadialGradient(c.x, c.y, radius * 0.5, c.x, c.y, radius + 16 + pulse);
+        auraGrad.addColorStop(0, `${c.color}55`);
+        auraGrad.addColorStop(0.6, `${c.color}22`);
+        auraGrad.addColorStop(1, 'rgba(0,0,0,0)');
         ctx.beginPath();
-        ctx.arc(c.x, c.y, radius + 8 + pulse, 0, Math.PI * 2);
-        ctx.fillStyle = `${c.color}28`;
+        ctx.arc(c.x, c.y, radius + 16 + pulse, 0, Math.PI * 2);
+        ctx.fillStyle = auraGrad;
         ctx.fill();
 
-        // Drag Shadow
-        if (isDragging) {
+        // 8.3 Rotating Band Sigil Frame around Avatar (All characters get a subtle rotating sigil, amplified on select/hover!)
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.rotate(frame * (isMujica ? -0.014 : 0.014) + c.ox * 0.01);
+        const sigilR = radius + (isSelected || isHovered ? 8 : 4.5);
+
+        ctx.strokeStyle = isSelected || isHovered
+          ? (isMujica ? '#f3d266' : '#ffffff')
+          : (isMujica ? 'rgba(212, 175, 55, 0.55)' : `${c.color}88`);
+        ctx.lineWidth = isSelected || isHovered ? 1.8 : 1.1;
+        ctx.setLineDash(isMujica ? [5, 3] : [8, 5]);
+        ctx.beginPath();
+        ctx.arc(0, 0, sigilR, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Cardinal / Octagram Star Points on Sigil Ring
+        const ptsCount = isMujica ? 8 : 4;
+        for (let i = 0; i < ptsCount; i++) {
+          const a = (i * Math.PI * 2) / ptsCount;
+          const sx = Math.cos(a) * (sigilR + 2);
+          const sy = Math.sin(a) * (sigilR + 2);
           ctx.beginPath();
-          ctx.arc(c.x + 8, c.y + 12, radius, 0, Math.PI * 2);
-          ctx.fillStyle = 'rgba(0,0,0,0.55)';
+          ctx.arc(sx, sy, isSelected ? 2.4 : 1.6, 0, Math.PI * 2);
+          ctx.fillStyle = isMujica ? '#ffe28a' : '#ffffff';
           ctx.fill();
+        }
+        ctx.restore();
+
+        // Floating Codename Crest above Avatar for Ave Mujica / Selected Character
+        if (isMujica || isSelected || isHovered) {
+          const codename = (c.romaji.split('/')[0] || c.id).trim().toUpperCase();
+          ctx.font = 'bold 8.5px "Cinzel", serif';
+          ctx.textAlign = 'center';
+          ctx.fillStyle = isMujica ? '#ffe28a' : '#a8d8ff';
+          ctx.fillText(`✦ ${codename} ✦`, c.x, c.y - radius - (isSelected ? 12 : 8));
         }
 
         // Circular Avatar Image
@@ -1887,66 +3021,68 @@
         }
         ctx.restore();
 
-        // Glowing Ring
+        // Crisp Metallic / Neon Avatar Border
         ctx.beginPath();
         ctx.arc(c.x, c.y, radius, 0, Math.PI * 2);
-        ctx.strokeStyle = isSelected || isDragging ? '#ffffff' : c.color;
+        ctx.strokeStyle = isSelected || isDragging ? '#ffffff' : (isMujica ? '#e5c158' : c.color);
         ctx.lineWidth = isSelected || isDragging ? 3.5 : 2.5;
         ctx.stroke();
 
-        // Name & Role Tag
-        ctx.font = 'bold 12px sans-serif';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'top';
-
-        const isSleeping = (clockMode === 'late_night_sleep') || (c.currentAction && (c.currentAction.includes('睡') || c.currentAction.includes('休眠')));
-        let nameTag = `${c.name} (${c.role.split('/')[0].trim()})`;
+        // 8.4 Chamfered HUD Nameplate with Live Location Micro-Subtext
+        const isSleeping = (clockMode === 'late_night_sleep' || activeScenarioKey === 'late_night_sleep') ||
+                           (c.currentAction && (c.currentAction.includes('睡') || c.currentAction.includes('休眠')));
+        let nameTag = `${c.name} · ${c.role.split('/')[0].trim()}`;
         if (isSleeping) {
           const homeName = c.currentLocation.split('·')[0].replace('（', '').replace('）', '').replace('住宅', '宅').trim();
           nameTag = `🏠 ${c.name} · ${homeName}`;
         }
-        const tagW = ctx.measureText(nameTag).width;
 
-        ctx.fillStyle = 'rgba(14, 18, 28, 0.94)';
-        ctx.fillRect(c.x - tagW / 2 - 8, c.y + radius + 6, tagW + 16, 20);
-        ctx.strokeStyle = c.color;
-        ctx.lineWidth = 1.2;
-        ctx.strokeRect(c.x - tagW / 2 - 8, c.y + radius + 6, tagW + 16, 20);
+        ctx.font = 'bold 11.5px sans-serif';
+        const tagW = ctx.measureText(nameTag).width;
+        const boxW = tagW + 22;
+        const boxH = 21;
+        const boxX = c.x - boxW / 2;
+        const boxY = c.y + radius + 6;
+
+        ctx.fillStyle = 'rgba(9, 13, 24, 0.95)';
+        drawChamferRect(ctx, boxX, boxY, boxW, boxH, 5);
+        ctx.fill();
+        ctx.strokeStyle = isSelected ? '#ffffff' : (isMujica ? '#d4af37' : c.color);
+        ctx.lineWidth = isSelected ? 1.8 : 1.2;
+        ctx.stroke();
+
+        // Band indicator micro-diamond inside nameplate
+        ctx.beginPath();
+        ctx.arc(boxX + 8.5, boxY + boxH / 2, 3, 0, Math.PI * 2);
+        ctx.fillStyle = c.color;
+        ctx.fill();
 
         ctx.fillStyle = '#ffffff';
-        ctx.fillText(nameTag, c.x, c.y + radius + 9);
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(nameTag, c.x + 3, boxY + boxH / 2 + 0.5);
 
         // Sleep Mode Indicator: Floating 💤
         if (isSleeping) {
-          ctx.save();
-          const zFloat = Math.sin(frame * 0.05 + c.ox * 0.1) * 3;
+          const zFloat = Math.sin(frame * 0.05 + c.ox * 0.1) * 3.5;
           ctx.font = '16px sans-serif';
           ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
-          ctx.fillText('💤', c.x + radius - 6, c.y - radius - 2 + zFloat);
-          ctx.restore();
+          ctx.fillText('💤', c.x + radius - 5, c.y - radius - 2 + zFloat);
         }
+        ctx.restore();
       });
     }
 
-    
-    
-
-    
-    
-
-    
     // ==========================================
     // SAKIKO MOVE AUDIO SYSTEM (祥子位移与拖拽语音播放系统)
     // ==========================================
-    let isSakikoAudioEnabled = true;
-
     function showAudioToast(msg) {
       let toast = document.getElementById('sakiko-audio-toast');
       if (!toast) {
         toast = document.createElement('div');
         toast.id = 'sakiko-audio-toast';
-        toast.style.cssText = 'position:fixed; top:75px; left:50%; transform:translateX(-50%); background:rgba(30,24,48,0.95); border:1px solid rgba(212,175,55,0.7); color:#f3f4f8; padding:8px 20px; border-radius:24px; font-size:13px; font-weight:700; box-shadow:0 6px 25px rgba(0,0,0,0.6), 0 0 18px rgba(212,175,55,0.35); backdrop-filter:blur(14px); z-index:10000; pointer-events:none; opacity:0; transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);';
+        toast.style.cssText = 'position:fixed; top:75px; left:50%; transform:translateX(-50%); background:rgba(20,16,38,0.96); border:1px solid rgba(212,175,55,0.85); color:#ffe89e; padding:8px 22px; border-radius:24px; font-size:13px; font-weight:700; box-shadow:0 8px 28px rgba(0,0,0,0.7), 0 0 22px rgba(212,175,55,0.45); backdrop-filter:blur(14px); z-index:10000; pointer-events:none; opacity:0; transition:all 0.3s cubic-bezier(0.16, 1, 0.3, 1);';
         document.body.appendChild(toast);
       }
       toast.innerText = msg;
@@ -1972,7 +3108,6 @@
 
       init() {
         this.setupAudioElement();
-        // Check location change on load
         setTimeout(() => {
           this.checkLocationChange();
         }, 800);
@@ -2008,7 +3143,6 @@
           if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
 
           const now = this.audioCtx.currentTime;
-          // Dual harmonic bell chime: E5 (659Hz) -> B5 (988Hz)
           const notes = [659.25, 987.77];
           notes.forEach((freq, idx) => {
             const osc = this.audioCtx.createOscillator();
@@ -2036,6 +3170,9 @@
         const label = triggerType === 'location_change' ? '祥子时空位移' : (triggerType === 'test' ? '语音测试' : '手动拖拽祥子');
         showAudioToast('🔊 「さき、移動」· ' + label);
 
+        const saki = CHARACTERS.find(c => c.id === 'sakiko');
+        if (saki) spawnShockwave(saki.x, saki.y, '#d4af37');
+
         if (this.audio) {
           this.audio.currentTime = 0;
           const p = this.audio.play();
@@ -2060,26 +3197,22 @@
         if (!saki) return;
         const currentLocKey = saki.currentLocation || (saki.ox + ',' + saki.oy);
         const storageKey = 'bangdream_sakiko_last_known_location';
-        const lastLoc = localStorage.getItem(storageKey);
-
-        if (lastLoc && lastLoc !== currentLocKey) {
-          console.log('[Sakiko Audio] Location changed: ' + lastLoc + ' -> ' + currentLocKey);
-          this.play('location_change', '从「' + lastLoc + '」变更为「' + currentLocKey + '」');
+        try {
+          const lastLoc = localStorage.getItem(storageKey);
+          if (lastLoc && lastLoc !== currentLocKey) {
+            console.log('[Sakiko Audio] Location changed: ' + lastLoc + ' -> ' + currentLocKey);
+            this.play('location_change', '从「' + lastLoc + '」变更为「' + currentLocKey + '」');
+          }
+          localStorage.setItem(storageKey, currentLocKey);
+        } catch (e) {
+          // Ignore storage access errors in strict privacy or sandboxed contexts
         }
-        localStorage.setItem(storageKey, currentLocKey);
       }
     };
 
-    
-
-
-    
-    
     // ==========================================
     // 24-HOUR SPATIAL ROUTINE & HOLIDAY ENGINE (全员24小时时空漫游与现实假期引擎)
     // ==========================================
-    let clockMode = 'realtime'; // 'realtime', 'weekday_school', 'twilight_ring', 'weekend_live'
-
     // Japanese Holidays & Vacation Helper
     function isJapaneseHoliday(date) {
       const m = date.getMonth() + 1;
@@ -2178,6 +3311,8 @@
     };
 
     function applyRoutine(scenarioKey) {
+      const scenarioChanged = (activeScenarioKey !== scenarioKey);
+      activeScenarioKey = scenarioKey;
       const scenario = ROUTINE_PROFILES[scenarioKey];
       if (!scenario) return;
 
@@ -2192,7 +3327,39 @@
         }
       });
 
-      // Notify Sakiko audio system of location shift if applicable
+      // Gentle cluster separation pass so avatars & capsule labels at the same venue never collide
+      const minSepX = 98;
+      const minSepY = 68;
+      for (let iter = 0; iter < 5; iter++) {
+        for (let i = 0; i < CHARACTERS.length; i++) {
+          for (let j = i + 1; j < CHARACTERS.length; j++) {
+            const a = CHARACTERS[i];
+            const b = CHARACTERS[j];
+            const dx = b.ox - a.ox;
+            const dy = b.oy - a.oy;
+            if (Math.abs(dx) < minSepX && Math.abs(dy) < minSepY) {
+              const pushX = ((minSepX - Math.abs(dx)) * 0.32) * (dx >= 0 ? 1 : -1);
+              const pushY = ((minSepY - Math.abs(dy)) * 0.32) * (dy >= 0 ? 1 : -1);
+              a.ox = Math.round(a.ox - pushX);
+              b.ox = Math.round(b.ox + pushX);
+              a.oy = Math.round(a.oy - pushY);
+              b.oy = Math.round(b.oy + pushY);
+            }
+          }
+        }
+      }
+
+      if (scenarioChanged || frame < 2) {
+        CHARACTERS.forEach(c => {
+          if (!draggedChar || draggedChar.id !== c.id) {
+            c.x = c.ox;
+            c.y = c.oy;
+            c.vx = 0;
+            c.vy = 0;
+          }
+        });
+      }
+
       if (typeof SAKIKO_AUDIO_SYSTEM !== 'undefined' && SAKIKO_AUDIO_SYSTEM.checkLocationChange) {
         SAKIKO_AUDIO_SYSTEM.checkLocationChange();
       }
@@ -2212,13 +3379,22 @@
         applyRoutine('twilight_ring');
         return;
       }
+      if (clockMode === 'night_quiet') {
+        timeSpan.textContent = '深夜 22:00 JST (静谧归宿·夜班客服)';
+        applyRoutine('night_quiet');
+        return;
+      }
+      if (clockMode === 'late_night_sleep') {
+        timeSpan.textContent = '凌晨 02:00 JST (全员卧室安寝休眠)';
+        applyRoutine('late_night_sleep');
+        return;
+      }
       if (clockMode === 'weekend_live') {
         timeSpan.textContent = '周末 14:00 JST (假期休闲·祥子家教配器)';
         applyRoutine('weekend_live');
         return;
       }
 
-      // 'realtime' mode: dynamic auto-detection
       const now = new Date();
       const formatter = new Intl.DateTimeFormat('zh-CN', {
         timeZone: 'Asia/Tokyo',
@@ -2286,50 +3462,9 @@
       timeSpan.textContent = parts + ' JST (' + periodLabel + ')';
     }
 
-    
     // ==========================================
     // TOKYO REALTIME WEATHER & PRECIPITATION ENGINE (东京气象与动态光影引擎)
     // ==========================================
-    let currentWeather = 'stars'; // 'stars', 'rain', 'cloudy', 'clear'
-    let weatherTemp = '17°C';
-    let weatherLabel = '澄澈星原';
-
-    // Rain Particles
-    const RAIN_DROPS = [];
-    for (let i = 0; i < 90; i++) {
-      RAIN_DROPS.push({
-        x: Math.random() * 2000 - 200,
-        y: Math.random() * 1200,
-        len: 12 + Math.random() * 10,
-        speed: 14 + Math.random() * 8,
-        alpha: 0.25 + Math.random() * 0.35
-      });
-    }
-
-    // River Water Ripples (神田川落雨波纹)
-    const RIVER_RIPPLES = [];
-    for (let i = 0; i < 18; i++) {
-      RIVER_RIPPLES.push({
-        x: 200 + Math.random() * 1300,
-        y: 600 + Math.random() * 35,
-        r: Math.random() * 12,
-        maxR: 10 + Math.random() * 14,
-        alpha: Math.random()
-      });
-    }
-
-    // Starfield Points (祥子星原微光粒子)
-    const STAR_POINTS = [];
-    for (let i = 0; i < 65; i++) {
-      STAR_POINTS.push({
-        x: Math.random() * 1800,
-        y: Math.random() * 520, // Upper sky
-        baseR: 0.8 + Math.random() * 1.6,
-        phase: Math.random() * Math.PI * 2,
-        speed: 0.02 + Math.random() * 0.03
-      });
-    }
-
     function updateWeatherDisplay() {
       const iconEl = document.getElementById('weatherIcon');
       const textEl = document.getElementById('weatherText');
@@ -2345,7 +3480,6 @@
       textEl.textContent = `东京 ${weatherTemp} · ${weatherLabel}`;
     }
 
-    // Fetch live weather from public meteorological API (client-side in browser)
     async function fetchTokyoLiveWeather() {
       try {
         const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=35.73&longitude=139.71&current_weather=true');
@@ -2357,7 +3491,6 @@
           const code = data.current_weather.weathercode;
           const isDay = data.current_weather.is_day === 1;
 
-          // WMO weather code parsing
           if ([51, 53, 55, 61, 63, 65, 80, 81, 82].includes(code)) {
             currentWeather = 'rain';
             weatherLabel = '神田川微雨';
@@ -2371,7 +3504,6 @@
           updateWeatherDisplay();
         }
       } catch (e) {
-        // Fallback to canon seasonal Tokyo weather (10月深秋夜间 17°C 澄澈星空)
         const hour = new Date().getHours();
         const isNight = hour >= 18 || hour < 6;
         currentWeather = isNight ? 'stars' : 'clear';
@@ -2381,16 +3513,14 @@
       }
     }
 
-    // World-space weather elements (scales with camera pan/zoom)
     function drawWeatherWorldLayer() {
       if (currentWeather === 'rain') {
-        // Falling rain streaks
-        ctx.strokeStyle = 'rgba(160, 210, 255, 0.45)';
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = 'rgba(160, 215, 255, 0.48)';
+        ctx.lineWidth = 1.25;
         RAIN_DROPS.forEach(p => {
           ctx.beginPath();
           ctx.moveTo(p.x, p.y);
-          ctx.lineTo(p.x + 3, p.y + p.len);
+          ctx.lineTo(p.x + 3.5, p.y + p.len);
           ctx.stroke();
 
           p.x += 1.8;
@@ -2401,11 +3531,10 @@
           }
         });
 
-        // Water ripples on Kanda river
         RIVER_RIPPLES.forEach(rp => {
           ctx.beginPath();
-          ctx.ellipse(rp.x, rp.y, rp.r * 1.8, rp.r * 0.6, 0, 0, Math.PI * 2);
-          ctx.strokeStyle = `rgba(180, 225, 255, ${rp.alpha * 0.4})`;
+          ctx.ellipse(rp.x, rp.y, rp.r * 1.9, rp.r * 0.65, 0, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(180, 225, 255, ${rp.alpha * 0.48})`;
           ctx.lineWidth = 1.1;
           ctx.stroke();
 
@@ -2420,53 +3549,118 @@
           }
         });
       } else if (currentWeather === 'stars') {
-        // Twinkling Starfield in Upper Sky
-        STAR_POINTS.forEach(st => {
-          const alpha = 0.3 + 0.6 * (Math.sin(frame * st.speed + st.phase) * 0.5 + 0.5);
+        STAR_POINTS.forEach((st, idx) => {
+          const alpha = 0.3 + 0.68 * (Math.sin(frame * st.speed + st.phase) * 0.5 + 0.5);
           ctx.beginPath();
           ctx.arc(st.x, st.y, st.baseR, 0, Math.PI * 2);
-          ctx.fillStyle = `rgba(235, 245, 255, ${alpha})`;
+          ctx.fillStyle = st.isGold
+            ? `rgba(255, 232, 160, ${alpha})`
+            : `rgba(235, 245, 255, ${alpha})`;
           ctx.fill();
 
-          // Soft star halo
-          if (st.baseR > 1.5 && alpha > 0.6) {
+          if (st.baseR > 1.5 && alpha > 0.62) {
             ctx.beginPath();
-            ctx.arc(st.x, st.y, st.baseR * 3, 0, Math.PI * 2);
-            ctx.fillStyle = `rgba(212, 175, 55, ${alpha * 0.15})`;
+            ctx.arc(st.x, st.y, st.baseR * 3.4, 0, Math.PI * 2);
+            ctx.fillStyle = st.isGold
+              ? `rgba(212, 175, 55, ${alpha * 0.22})`
+              : `rgba(91, 155, 213, ${alpha * 0.22})`;
             ctx.fill();
+
+            if (idx % 5 === 0) {
+              const fl = st.baseR * 4.8;
+              ctx.strokeStyle = `rgba(255, 255, 255, ${alpha * 0.52})`;
+              ctx.lineWidth = 0.85;
+              ctx.beginPath();
+              ctx.moveTo(st.x - fl, st.y);
+              ctx.lineTo(st.x + fl, st.y);
+              ctx.moveTo(st.x, st.y - fl);
+              ctx.lineTo(st.x, st.y + fl);
+              ctx.stroke();
+            }
           }
+        });
+
+        SHOOTING_STARS.forEach(ss => {
+          if (ss.cooldown > 0) {
+            ss.cooldown--;
+            if (ss.cooldown === 0) {
+              ss.x = 200 + Math.random() * 1200;
+              ss.y = 20 + Math.random() * 220;
+              ss.vx = (Math.random() > 0.5 ? 1 : -1) * (8.5 + Math.random() * 4);
+              ss.vy = 2.6 + Math.random() * 2.5;
+              ss.alpha = 0.95;
+            }
+          } else {
+            ss.x += ss.vx;
+            ss.y += ss.vy;
+            ss.alpha -= 0.018;
+
+            const tailX = ss.x - ss.vx * 6.5;
+            const tailY = ss.y - ss.vy * 6.5;
+            const grad = ctx.createLinearGradient(tailX, tailY, ss.x, ss.y);
+            grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
+            grad.addColorStop(0.6, `rgba(212, 175, 55, ${ss.alpha * 0.65})`);
+            grad.addColorStop(1, `rgba(255, 250, 230, ${ss.alpha})`);
+
+            ctx.beginPath();
+            ctx.moveTo(tailX, tailY);
+            ctx.lineTo(ss.x, ss.y);
+            ctx.strokeStyle = grad;
+            ctx.lineWidth = 2.2;
+            ctx.lineCap = 'round';
+            ctx.stroke();
+
+            if (ss.alpha <= 0) {
+              ss.cooldown = 110 + Math.floor(Math.random() * 150);
+            }
+          }
+        });
+      } else if (currentWeather === 'clear') {
+        SUN_LEAVES.forEach(lf => {
+          lf.x += lf.vx + Math.sin(frame * 0.03 + lf.y * 0.01) * 0.3;
+          lf.y += lf.vy;
+          lf.rot += lf.vRot;
+          if (lf.y > 1020) { lf.y = -10; lf.x = Math.random() * 1650; }
+          if (lf.x > 1680) lf.x = 0;
+
+          ctx.save();
+          ctx.translate(lf.x, lf.y);
+          ctx.rotate(lf.rot);
+          ctx.fillStyle = 'rgba(255, 209, 102, 0.58)';
+          ctx.beginPath();
+          ctx.ellipse(0, 0, lf.size, lf.size * 0.55, 0, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
         });
       }
     }
 
-    // Screen-space atmosphere overlay (fixed viewport overlay)
     function drawWeatherScreenOverlay(w, h) {
       if (currentWeather === 'rain') {
-        // Subtle cool rainy vignette
-        const grad = ctx.createRadialGradient(w/2, h/2, w * 0.2, w/2, h/2, w * 0.7);
+        const grad = ctx.createRadialGradient(w / 2, h / 2, w * 0.2, w / 2, h / 2, w * 0.72);
         grad.addColorStop(0, 'rgba(15, 25, 45, 0)');
-        grad.addColorStop(1, 'rgba(12, 18, 32, 0.32)');
+        grad.addColorStop(1, 'rgba(8, 12, 26, 0.36)');
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, w, h);
       } else if (currentWeather === 'stars') {
-        // Golden starlight subtle ambient hue
-        const grad = ctx.createRadialGradient(w * 0.5, h * 0.2, 50, w * 0.5, h * 0.2, w * 0.6);
-        grad.addColorStop(0, 'rgba(212, 175, 55, 0.04)');
+        const grad = ctx.createRadialGradient(w * 0.5, h * 0.18, 40, w * 0.5, h * 0.18, w * 0.65);
+        grad.addColorStop(0, 'rgba(212, 175, 55, 0.05)');
         grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
         ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+      } else if (currentWeather === 'clear') {
+        const sunGrad = ctx.createRadialGradient(w * 0.15, 0, 20, w * 0.15, 0, w * 0.65);
+        sunGrad.addColorStop(0, 'rgba(255, 220, 130, 0.12)');
+        sunGrad.addColorStop(0.5, 'rgba(255, 180, 100, 0.05)');
+        sunGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = sunGrad;
         ctx.fillRect(0, 0, w, h);
       }
     }
 
     // ==========================================
     // STEALTH DEVELOPER & DEBUG GATEWAY (隐藏式开发者与调试网关)
-    // 普通访客直接访问时：时间绝对客观流逝，不可点击、不可篡改
-    // 供 zcode / 开发者专属调试的三大入口：
-    // 1. URL参数：访问 index.html?debug=1 或 #debug
-    // 2. 快捷键：在网页任意处按下 ` 键（键盘左上角波浪键）
-    // 3. 控制台 API：window.__SANDBOX_DEV__.setMode('weekday_school') 等
     // ==========================================
-    let isDebugMode = false;
     const urlParams = new URLSearchParams(window.location.search);
     if (urlParams.get('debug') === '1' || window.location.hash === '#debug') {
       enableDebugMode(true);
@@ -2476,7 +3670,6 @@
       if (isDebugMode) return;
       isDebugMode = true;
 
-      // 允许点击时间胶囊轮换
       const timeIndicator = document.getElementById('timeIndicator');
       if (timeIndicator) {
         timeIndicator.style.cursor = 'pointer';
@@ -2484,7 +3677,6 @@
         timeIndicator.onclick = cycleDebugMode;
       }
 
-      // 注入微型开发者浮动面板
       if (!document.getElementById('devControlPanel')) {
         const panel = document.createElement('div');
         panel.id = 'devControlPanel';
@@ -2537,7 +3729,6 @@
       }
     }
 
-    // 快捷键激活/关闭：按 `（波浪号键）
     window.addEventListener('keydown', (e) => {
       if (e.key === '`' || e.key === '~') {
         if (isDebugMode) {
@@ -2548,7 +3739,6 @@
       }
     });
 
-    // 暴露给 zcode / DevTools 控制台的全局专属调试对象
     window.__SANDBOX_DEV__ = {
       enable: () => enableDebugMode(false),
       disable: () => disableDebugMode(),
@@ -2565,19 +3755,20 @@
       },
       setMode: (mode) => {
         enableDebugMode(true);
-        if (['realtime', 'weekday_school', 'twilight_ring', 'night_quiet', 'weekend_live'].includes(mode)) {
+        if (['realtime', 'weekday_school', 'twilight_ring', 'night_quiet', 'late_night_sleep', 'weekend_live'].includes(mode)) {
           clockMode = mode;
           const modeLabels = {
             realtime: '⏱️ 实时东京时钟',
             weekday_school: '🏫 平日学园在校 (10:30 JST)',
             twilight_ring: '🎸 放学黄昏集结 (17:30 JST)',
             night_quiet: '🌙 深夜静谧归宿 (22:00 JST)',
+            late_night_sleep: '🛌 深夜全员安寝 (02:00 JST)',
             weekend_live: '🎹 周末假期漫游 (祥子钢琴家教/配器)'
           };
           showAudioToast('已切至：' + modeLabels[mode]);
           updateJSTClock();
         } else {
-          console.warn('[DEV] 未知模式，可用值：realtime, weekday_school, twilight_ring, night_quiet, weekend_live');
+          console.warn('[DEV] 未知模式，可用值：realtime, weekday_school, twilight_ring, night_quiet, late_night_sleep, weekend_live');
         }
       },
       getMode: () => clockMode,
@@ -2592,7 +3783,7 @@
 
     setInterval(updateJSTClock, 1000);
     updateJSTClock();
-
+    fetchTokyoLiveWeather();
 
     // Init
     renderRoster();
@@ -2600,8 +3791,6 @@
     render();
 
     // --- Off-Map Satellite Dock Engine (v2.5.0) ---
-    // 事件驱动：初始 + 每 30s 轮询一次（不进渲染主循环），
-    // 仅在都外名单签名变化时重建 DOM。
     function updateOffMapDock() {
       const dock = document.getElementById('offMapDock');
       const countEl = document.getElementById('offMapCount');
@@ -2651,7 +3840,6 @@
         });
       }
     };
-    // 雷达坞 HTML 位于本脚本之后，需等 DOM 解析完成再绑定
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', bindOffMapDock);
     } else {
@@ -2659,10 +3847,8 @@
     }
     setTimeout(updateOffMapDock, 500);
     setInterval(updateOffMapDock, 30000);
-
   </script>
 
-  <!-- Floating Diary Navigation Button -->
   <!-- Off-Map Satellite Dock (v2.5.0) -->
   <div id="offMapDock" class="off-map-dock">
     <div class="dock-badge" id="offMapBadge">
@@ -2684,6 +3870,7 @@
     </div>
   </div>
 
+  <!-- Floating Diary Navigation Button -->
   <div class="sandbox-diary-wrap" style="position:fixed; bottom:24px; left:24px; z-index:9999;">
     <a id="sandbox-diary-btn" href="../03-乐团共享日记/乐团共享日记本" target="_top"
        style="display:inline-flex; align-items:center; gap:8px; padding:9px 18px; border-radius:10px; font-size:13px; font-weight:600;
@@ -2709,5 +3896,4 @@
     })();
   </script>
 </body>
-
 </html>
