@@ -286,5 +286,12 @@ if __name__ == "__main__":
         if fn.endswith(".md") and "卷" in fn:
             gated_total += apply_time_gates(os.path.join(chronicle_dir, fn), [])
     print(f"[time-gate] 门控未来切片 {gated_total} 个")
+    # 时间锁同样覆盖 03 共享日记：未来日期的随笔在站点上保持封存
+    # （复用同一 time-gate.js；runtime exporter 也会按 T>now 将其排除）
+    diary_path = os.path.join("content", "03-乐团共享日记", "乐团共享日记本.md")
+    diary_gated = 0
+    if os.path.exists(diary_path):
+        diary_gated = apply_time_gates(diary_path, [])
+    print(f"[time-gate] 日记门控未来条目 {diary_gated} 个")
     # demux：只分流已解锁切片（未来切片延迟入库）
     demux_chronicle_to_profiles()
