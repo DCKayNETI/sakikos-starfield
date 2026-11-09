@@ -121,9 +121,10 @@ def clean_text(text):
 
 
 def clean_title(title):
-    """标题文本化：wikilink 还原为显示文本，剥 **/# 包装，还原导出转义。"""
+    """标题文本化：wikilink 还原为显示文本，剥 **/# 包装，还原 Docs 导出转义。"""
     title = LINK.sub(lambda m: (m.group(2) or m.group(1)).strip(), title)
-    for esc, ch in (("\\.", "."), ("\\!", "!"), ("\\~", "~")):
+    for esc, ch in (("\\.", "."), ("\\!", "!"), ("\\~", "~"),
+                    ("\\|", "|"), ("\\*", "*"), ("\\#", "#")):
         title = title.replace(esc, ch)
     return re.sub(r"^[#*\s]+|[*\s]+$", "", title).strip()
 
