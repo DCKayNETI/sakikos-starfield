@@ -1,0 +1,26 @@
+name: diag-doc
+on:
+  workflow_dispatch:
+jobs:
+  diag:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dump Nov volume export
+        run: |
+          python3 - <<'PYEOF'
+          import urllib.request, re
+          url = "https://docs.google.com/document/d/1RXOIuV9Sehhm1rbNhIZbIKCw-T8neRlCE13M-gDL7dA/export?format=md"
+          req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+          data = urllib.request.urlopen(req, timeout=180).read().decode("utf-8-sig", errors="replace")
+          print("BYTES", len(data))
+          print("SLICES", len(re.findall(r"^#{2,4} ?\*{0,2}【", data, re.M)))
+          print("HAS_1109", "2026-11-09" in data)
+          print("PLACEHOLDER", "待 2026 年 11 月 1 日开启推演记录" in data)
+          print("HEAD>>>")
+          print(data[:600])
+          print("TAIL>>>")
+          print(data[-600:])
+          for line in data.splitlines():
+              if "【" in line:
+                  print("HDR:", line[:90])
+          PYEOF
