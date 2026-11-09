@@ -9,6 +9,7 @@ Quartz 的双链解析器无法识别，因此先经 unescape_wikilinks() 管道
 import os
 import re
 import sys
+import time
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
@@ -45,14 +46,21 @@ def unescape_wikilinks(text: str) -> str:
     return ESCAPED_WIKILINK.sub(lambda m: "[[" + m.group(1).replace("\\", "") + "]]", text)
 
 
-def sync_doc(doc_id: str, target_path: str) -> bool:
+def sync_doc(doc_id: str, target_path: str, attempts: int = 3, timeout: int = 120) -> bool:
+    """拉取单个 doc。Google 导出偶发 read timeout（大文档/并发编辑时更明显），
+    单次失败不代表文档不可达：同一次运行内最多 attempts 次（退避 5s/10s），
+    全部失败才判该文档失败（整体 run 仍 fail closed，不提交半套内容）。"""
     url = f"https://docs.google.com/document/d/{doc_id}/export?format=md"
-    try:
-        req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            if resp.status != 200:
-                raise RuntimeError(f"HTTP {resp.status}")
-            content = resp.read().decode("utf-8-sig", errors="replace").replace("\ufeff", "")
+    last_err = None
+    for attempt in range(1, attempts + 1):
+        if attempt > 1:
+            time.sleep(5 * (attempt - 1))
+        try:
+            req = urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"})
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                if resp.status != 200:
+                    raise RuntimeError(f"HTTP {resp.status}")
+                content = resp.read().decode("utf-8-sig", errors="replace").replace("\ufeff", "")
             content = unescape_wikilinks(content)
             for ghost, neutral in GHOST_EXAMPLES.items():
                 content = content.replace(ghost, neutral)
@@ -73,9 +81,11 @@ def sync_doc(doc_id: str, target_path: str) -> bool:
                 f.write(final_content)
             print(f"[OK] Synced: {target_path}")
             return True
-    except Exception as e:
-        print(f"[FAIL] {target_path} (doc {doc_id}): {e}", file=sys.stderr)
-        return False
+        except Exception as e:
+            last_err = e
+            print(f"[retry] {target_path} attempt {attempt}/{attempts} failed: {e}", file=sys.stderr)
+    print(f"[FAIL] {target_path} (doc {doc_id}): {last_err}", file=sys.stderr)
+    return False
 
 
 
