@@ -40,6 +40,19 @@ GHOST_EXAMPLES = {
     "[[地标]]": "『地标』",
 }
 
+# 切片标题若在 Docs 中写成「普通加粗文本 + 字面 ###」，导出会转义为
+# **\#\#\# 【2026-11-09 07:15 JST \| 标题】**。还原成真正的 Markdown 标题，
+# 否则 time-gate / demux / Quartz 都无法识别切片（仅匹配整行结构）。
+ESCAPED_SLICE_HEADER = re.compile(
+    r"^\s*\*{0,2}(?:\\#){2,4}\s*(?P<label>【[^】]+】)\*{0,2}\s*$", re.M)
+
+
+def normalize_escaped_slice_headers(text: str) -> str:
+    """把整行的 **\\#\\#\\# 【…】** 还原为 ### 【…】；标题内的转义竖线一并还原。"""
+    def repl(m):
+        return "### " + m.group("label").replace("\\|", "|")
+    return ESCAPED_SLICE_HEADER.sub(repl, text)
+
 
 def unescape_wikilinks(text: str) -> str:
     """把导出中的 \\[\\[...\\]\\] 还原为字面 [[...]]，并去掉链接目标内的转义符。"""
@@ -62,6 +75,7 @@ def sync_doc(doc_id: str, target_path: str, attempts: int = 3, timeout: int = 12
                     raise RuntimeError(f"HTTP {resp.status}")
                 content = resp.read().decode("utf-8-sig", errors="replace").replace("\ufeff", "")
             content = unescape_wikilinks(content)
+            content = normalize_escaped_slice_headers(content)
             for ghost, neutral in GHOST_EXAMPLES.items():
                 content = content.replace(ghost, neutral)
 
