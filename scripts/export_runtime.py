@@ -50,11 +50,11 @@ PARTITIONS = [
 # 小节级切分：# 与 ## 为边界（### 以下并入上级小节）。
 SECTION_HEAD = re.compile(r"^#{1,2} .+$", re.M)
 PERSONA_HEAD = re.compile(r"^#{1,2}.*当前形态状态机.*$", re.M)
-# 切片内结构化行（ADDENDUM 定义的格式字段）。兼容 "* **标签**: …" 的项目符号/粗体
-# 星号前缀；行锚定避免误配正文，捕获段尾部留待 clean_text 处理
-SCENE_LINE = re.compile(r"^[\s*#]*核心场景\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
-WEATHER_LINE = re.compile(r"^[\s*#]*气象\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
-SUMMARY_LINE = re.compile(r"^[\s*#]*概要\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+# 切片内结构化行（ADDENDUM 定义的格式字段）。兼容三种写法：项目符号+粗体
+# （`* **标签**:`）、Docs 导出转义（`\* 标签:`）、纯文本行；行锚定避免误配正文
+SCENE_LINE = re.compile(r"^[\s*#\\]*核心场景\\?\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+WEATHER_LINE = re.compile(r"^[\s*#\\]*气象\\?\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
+SUMMARY_LINE = re.compile(r"^[\s*#\\]*概要\\?\*{0,2}\s*[:：]\s*(.+?)\s*$", re.M)
 # World Info 小节白名单（ADDENDUM_02 仲裁：world_info 仅 grounded 世界事实小节可导出。
 # 速查 / §2 核心公共载体与资产协议（MOSTLY_NON_GROUNDED，其日记世界内概念由下方
 # 逐字文本与 03 日记记录承载）/ §6 维护公约等运维元规则一律排除）。按标题匹配属
@@ -114,7 +114,8 @@ def clean_text(text):
     text = GATE_OPEN_ANY.sub("", text)
     text = GATE_CLOSE_LINE.sub("", text)
     text = LINK.sub(lambda m: (m.group(2) or m.group(1)).strip(), text)
-    for esc, ch in (("\\.", "."), ("\\!", "!"), ("\\-", "-"), ("\\,", ","), ("\\~", "~")):
+    for esc, ch in (("\\.", "."), ("\\!", "!"), ("\\-", "-"), ("\\,", ","),
+                    ("\\~", "~"), ("\\|", "|"), ("\\*", "*"), ("\\#", "#")):
         text = text.replace(esc, ch)
     return text.strip()
 
