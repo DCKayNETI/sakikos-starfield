@@ -138,7 +138,7 @@ def load_volume_index() -> dict:
 MEMORIES_DIR = os.path.join("content", "04-成员记忆档案")
 DEMUX_SECTION = "## 4. 主世界历史与日常演进纪要"
 SLICE_HEADER = re.compile(r"^#{2,4}\s*\*{0,2}【(?P<label>[^】]+)】\*{0,2}\s*$", re.M)
-DEMUX_ANCHOR = re.compile(r"^[*\s]*个人记忆分流指引\*{0,2}\s*[::]\s*$", re.M)
+DEMUX_ANCHOR = re.compile(r"^[\\*\s]*个人记忆分流指引\\?\*{0,2}\s*[::]\s*$", re.M)
 LINK = re.compile(r"\[\[([^\]|]+?)(?:\|([^\]]+))?\]\]")
 SLICE_TIME = re.compile(r"(\d{4}-\d{2}-\d{2})(?:\s+(\d{2}:\d{2}))?")
 GATE_BADGE = "🔒 星轨观测锁定"
@@ -158,6 +158,7 @@ def _slice_unlock(label: str):
 
 def _clean(text: str) -> str:
     text = text.replace("\\-", "-").replace("\\!", "!").replace("\\.", ".").replace("\\,", ",")
+    text = text.replace("\\*", "*").replace("\\|", "|").replace("\\#", "#")
     text = text.replace("**", "").replace("`", "").strip()
     return re.sub(r"\s+", " ", text)
 
