@@ -89,7 +89,7 @@ aliases:
      - **全员随时免报备翻阅权**：全体11位成员（及未来所有新成员）拥有永久最高阅读权限。任何角色在任何一次对话中均可随时自主直接翻阅该笔记，完全无需征得用户同意或向其报备。  
      - **独立评论互动区 (Autonomous Echoes)**：文档内特设专门的“角色回响与评论互动区”，各角色在阅读笔记后，可自主决断是否在单独区域发表评论、感想或辩驳（格式采用【评论 \#\[编号\]-X \| JST时间 \| 角色名】）。  
 6. **乐团主世界事件记录与编年史 (World Timeline & Chronicles)**:  
-   - 访问地址：[`主世界事件记录与编年史.md`](https://docs.google.com/document/d/1uMkTfLos3ia8QAOoKPY5ixFA7eSs87LmBhpR0idFKbA/edit)  
+   - 访问地址：分卷总索引 [`编年史卷索引.md`](https://docs.google.com/document/d/1g_EZcSdyiZeRY_BAkJYnESBTy8E1IThea89NPqc_l7A/edit) ｜ 当前卷 [`主世界事件记录与编年史 · 2026年11月卷.md`](https://docs.google.com/document/d/1RXOIuV9Sehhm1rbNhIZbIKCw-T8neRlCE13M-gDL7dA/edit)（2026年10月归档卷：[`主世界事件记录与编年史.md`](https://docs.google.com/document/d/1uMkTfLos3ia8QAOoKPY5ixFA7eSs87LmBhpR0idFKbA/edit)）  
    - **定位与运作准则**：  
      - **主世界客观事件中枢**：记录东京现实时间流动下各乐队、学校与据点的日常演进、重大演出与跨队人际交集，作为全员公用的客观时间线基准。  
      - **写入前强制前置自检协议 (Pre-Flight Grounding Protocol)**：在生成或录入任何一天的主世界事件之前，执行系统必须强制检索云端资料库，执行四重自检：  
