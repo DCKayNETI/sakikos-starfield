@@ -22,10 +22,10 @@ jobs:
       changed: ${{ steps.commit.outputs.changed }}
       new_sha: ${{ steps.commit.outputs.new_sha }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.11"
       - name: Run Drive Sync Script
